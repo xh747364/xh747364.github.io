@@ -33,6 +33,7 @@
 	text-align: center;
 	background: #ededed;
 	outline: 1px solid #ddd;
+  margin: 1em 30px;
 }
 .instagram .thumb a {
 	position: relative;
@@ -48,7 +49,9 @@
 	clear: both;
 	width: 100%;
 	text-align: left;
+  padding-left: 0;
 }
+
 .instagram .album li{
 	list-style: none;
 	display: inline-block;
