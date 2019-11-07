@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>粘贴页脚</title>
+      <link href="/2019/11/05/stickyFooter/"/>
+      <url>/2019/11/05/stickyFooter/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>内容不足时，页脚固定在页面底部</p></blockquote><a id="more"></a><p>HTML</p><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">header</span>&gt;</span>头部<span class="tag">&lt;/<span class="name">header</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">main</span>&gt;</span>内容<span class="tag">&lt;/<span class="name">main</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">footer</span>&gt;</span>页脚<span class="tag">&lt;/<span class="name">footer</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure><p>CSS<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span>&#123;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">min-height</span>: <span class="number">100vh</span>;</span><br><span class="line">  <span class="attribute">flex-direction</span>: column;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">header</span>&#123;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#ffff</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#333</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">main</span>&#123;</span><br><span class="line">  <span class="attribute">flex</span>: <span class="number">1</span>;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">footer</span>&#123;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#ffff</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#333</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>预览</p><p><img src="https://xhxiehuan.club/blog-photolist/blog_photos/2019-08-03_stickyFooter.png" alt="服务器开小差了-_-!"> </p>]]></content>
+      
+      
+      <categories>
+          
+          <category> web前端 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> flex布局 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Ant design pro of vue 踩坑记录</title>
+      <link href="/2019/08/30/antDesignVue/"/>
+      <url>/2019/08/30/antDesignVue/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>基于 Ant Design of Vue 实现的 Ant Design Vue Pro 版</p></blockquote><a id="more"></a><ul><li>官网 [<a href="https://pro.loacg.com]" target="_blank" rel="noopener">https://pro.loacg.com]</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> web前端 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Vue </tag>
+            
+            <tag> ant design </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Vue 单元测试</title>
+      <link href="/2019/08/22/log2/"/>
+      <url>/2019/08/22/log2/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>vue 单元测试  </p></blockquote><a id="more"></a><h2 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install --save-dev @vue/test-utils karma karma-chrome-launcher karma-mocha karma-sourcemap-loader karma-spec-reporter karma-webpack mocha</span><br></pre></td></tr></table></figure><h2 id="在package-json层创建karma-conf-js-内容如下"><a href="#在package-json层创建karma-conf-js-内容如下" class="headerlink" title="在package.json层创建karma.conf.js 内容如下"></a>在package.json层创建karma.conf.js 内容如下</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> webpackConfig =  <span class="built_in">require</span>(<span class="string">'@vue/cli-service/webpack.config.js'</span>)</span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> (<span class="params">config</span>) </span>&#123;</span><br><span class="line">    config.set(&#123;</span><br><span class="line">        frameworks: [<span class="string">'mocha'</span>],</span><br><span class="line">        files: [</span><br><span class="line">            <span class="string">'tests/**/*.spec.js'</span>   <span class="comment">//tests目录下，所有.spce.js结尾的测试文件</span></span><br><span class="line">        ],</span><br><span class="line">        preprocessors: &#123;</span><br><span class="line">            <span class="string">'**/*.spec.js'</span>: [<span class="string">'webpack'</span>, <span class="string">'sourcemap'</span>]</span><br><span class="line">        &#125;,</span><br><span class="line">        webpack: webpackConfig,</span><br><span class="line">        reporters: [<span class="string">'spec'</span>],</span><br><span class="line">        browsers: [<span class="string">'ChromeHeadless'</span>]</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>package.json内增加script命令</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"test"</span>: <span class="string">"karma start"</span></span><br></pre></td></tr></table></figure><h2 id="引入断言模块chai应用"><a href="#引入断言模块chai应用" class="headerlink" title="引入断言模块chai应用"></a>引入断言模块chai应用</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//tests/unit 下创建 HellpWorld.spec.js</span></span><br><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> &#123; shallowMount &#125; <span class="keyword">from</span> <span class="string">"@vue/test-utils"</span>;</span><br><span class="line"><span class="keyword">import</span> HelloWorld <span class="keyword">from</span> <span class="string">"@/components/HelloWorld.vue"</span>;</span><br><span class="line"></span><br><span class="line">describe(<span class="string">"HelloWorld.vue"</span>, () =&gt; &#123;</span><br><span class="line">  it(<span class="string">"简单测试1 是否等于 true"</span>, () =&gt; &#123;</span><br><span class="line">    expect(<span class="number">1</span>).to.equal(<span class="literal">true</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">/******************其他用法*********************/</span></span><br><span class="line">describe(<span class="string">'异步测试Callback'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  it(<span class="string">'Done用例'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    </span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">describe(<span class="string">'异步测试Callback'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  it(<span class="string">'Done用例'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">done</span>) </span>&#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      done()</span><br><span class="line">    &#125;, <span class="number">1000</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br><span class="line"> </span><br><span class="line"><span class="comment">// promise</span></span><br><span class="line">describe(<span class="string">'异步测试Promise'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  it(<span class="string">'Promise用例'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">      resolve(<span class="literal">true</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br><span class="line"> </span><br><span class="line"><span class="comment">// async</span></span><br><span class="line">describe(<span class="string">'异步测试Async'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  it(<span class="string">'Async用例'</span>, <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> <span class="built_in">Promise</span>.resolve()</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure><blockquote><p>最后执行 npm run test<br>完结撒花❀❀❀</p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> web前端 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Vue </tag>
+            
+            <tag> 单元测试 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>落花有意随流水，流水无情恋落花</title>
+      <link href="/2019/07/22/log1/"/>
+      <url>/2019/07/22/log1/</url>
+      
+        <content type="html"><![CDATA[<p>落花孤独地飘零，寻找着能陪她一生一世的伴侣。流水静静地流淌，等待着能与他相遇的红颜知己。</p><a id="more"></a><p>他们就这样相互找寻着，终于有一天，落花与流水一见钟情。落花仰慕流水的英俊潇洒，博大胸怀。流水欣赏落花的妩媚多姿，温柔体贴。他们彼此吸引，相互依恋，成为世间的一段佳话。</p><p>无奈，流水整日飘忽不定，居无定所。落花则早已厌倦了这种漂泊的生活，只盼能与爱人寻个安乐窝，从此幸福的相守一生。于是，他们有了第一次激烈的争吵。</p><p>落花：“你就不能为我停留一刻吗？”</p><p>流水：“这是我的天性，你叫我如何能改？你就不能随我一起游遍大江南北，岂不乐哉？”</p><p>落花：“可这并不是我想要的，我想要的是安定的生活啊。”</p><p>流水低头不语，沉思良久：“你变了，以前的你是多么的善解人意，温柔懂事，从不强迫我做任何事。你不是说过，我到哪，你就会随我到哪吗？”</p><p>落花愕然，抬头看着流水，流下了怨恨的泪水：“你说我变了，那你呢？你又何尝不是？以前的你，是多么的无微不至，关爱万分，就是我想要天上的星星，你也会摘给我。”</p><p>流水摇头：“我们都变了，变了。”</p><p>落花听了，哭的更伤心了。流水本想安慰她，却又忍住了，他知道，此刻，无论他说什么，落花也听不进去。落花见流水这般无情，任她如此伤心难过丝毫没有劝慰的意思，恨恨的说道：“既然我要的你给不了，那我们分手吧。“说罢，便拂袖而去。流水只能眼睁睁地看着她离开，没有去追。</p><p>几年以后，落花依旧孤独一人，她的容颜已经被岁月侵蚀，可在她的内心深处，仍然深深的爱着流水，回忆着流水曾给她的快乐，每每想起，嘴角都会露出一丝甜蜜的微笑。可她不能回头，当初选择伤痛离开，难道错了吗？</p><p>到底是谁的错？</p><p>或许他们都没有错，错就错在命运不该如此安排，让他们相遇，相爱，却不能相守。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 随笔 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 诗词 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>你好，世界！</title>
+      <link href="/2019/07/20/HelloWord/"/>
+      <url>/2019/07/20/HelloWord/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>博客开通啦！</p></blockquote><a id="more"></a><p><img src="/assets/blogImg/first.jpg" alt="服务器开小差了-_-!"> </p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 部署 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>一些判断函数</title>
+      <link href="/2019/07/04/someRegExp/"/>
+      <url>/2019/07/04/someRegExp/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>各种判断函数</p></blockquote><a id="more"></a><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 合法数字</span></span><br><span class="line"><span class="keyword">let</span> isNumber = <span class="function">(<span class="params">num</span>) =&gt;</span> <span class="regexp">/^[0-9]+.?[0-9]*/g</span>.test(num)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 手机号</span></span><br><span class="line"><span class="keyword">let</span> isPhone = <span class="function">(<span class="params">num</span>) =&gt;</span> <span class="regexp">/^[+]&#123;0,1&#125;(\d)&#123;1,3&#125;[ ]?([-]?((\d)|[ ])&#123;1,12&#125;)+$/</span>.test(num)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 邮箱</span></span><br><span class="line"><span class="keyword">let</span> isEmail = <span class="function">(<span class="params">email</span>) =&gt;</span> <span class="regexp">/^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]&#123;2,4&#125;)$/</span>.test(email)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 身份证号</span></span><br><span class="line"><span class="keyword">let</span> isCardNo = <span class="function">(<span class="params">card</span>) =&gt;</span> <span class="regexp">/(^\d&#123;15&#125;$)|(^\d&#123;18&#125;$)|(^\d&#123;17&#125;(\d|X|x)$)/</span>.test(card)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 微信浏览器</span></span><br><span class="line"><span class="keyword">let</span> isWeChat = <span class="function"><span class="params">()</span> =&gt;</span> <span class="regexp">/MicroMessenger/i</span>.test(navigator.userAgent)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 微信开发者工具</span></span><br><span class="line"><span class="keyword">let</span> isWeChatDevTool = <span class="function"><span class="params">()</span> =&gt;</span> isWeChat() &amp;&amp; <span class="regexp">/wechatdevtools/i</span>.test(navigator.userAgent)</span><br><span class="line"></span><br><span class="line"><span class="comment">//支付宝浏览器</span></span><br><span class="line"><span class="keyword">let</span> isAliPay = <span class="function"><span class="params">()</span> =&gt;</span> <span class="regexp">/AlipayClient/i</span>.test(navigator.userAgent)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 移动端</span></span><br><span class="line"><span class="keyword">let</span> isMobile = <span class="function"><span class="params">()</span> =&gt;</span> <span class="regexp">/(iPhone|iPad|iPod|iOS|Android)/i</span>.test(navigator.userAgent)</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> JavaScript工具函数 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 工具 </tag>
+            
+            <tag> JavaScript </tag>
+            
+            <tag> 正则验证 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>世界很好,你也很好!</title>
+      <link href="/2019/07/01/%E4%B8%96%E7%95%8C%E5%BE%88%E5%A5%BD%EF%BC%8C%E4%BD%A0%E4%B9%9F%E5%BE%88%E5%A5%BD/"/>
+      <url>/2019/07/01/%E4%B8%96%E7%95%8C%E5%BE%88%E5%A5%BD%EF%BC%8C%E4%BD%A0%E4%B9%9F%E5%BE%88%E5%A5%BD/</url>
+      
+        <content type="html"><![CDATA[<p>  努力, 奋斗,<br>  加油, 坚持! </p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 部署 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
+</search>
