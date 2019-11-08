@@ -173,6 +173,31 @@
     </entry>
     
     
+    
+    <entry>
+      <title>回顾2018年</title>
+      <link href="/2018/12/31/2018%E6%80%BB%E7%BB%93/"/>
+      <url>/2018/12/31/2018%E6%80%BB%E7%BB%93/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>回顾2018年</p></blockquote><a id="more"></a><h1 id="学习的技术"><a href="#学习的技术" class="headerlink" title="学习的技术"></a>学习的技术</h1><ul><li><del>微信小程序</del></li><li><del>Vue-cli、Vue-router、webpack</del></li><li><del>node、express、koa、mysql</del></li></ul><h2 id="微信小程序"><a href="#微信小程序" class="headerlink" title="微信小程序"></a>微信小程序</h2><blockquote><p>因产品需求，自学了微信小程序，并且应用到实际项目中，美化原生picker抽屉弹层样式</p></blockquote><h2 id="Vue、Vue-router、webpack"><a href="#Vue、Vue-router、webpack" class="headerlink" title="Vue、Vue-router、webpack"></a>Vue、Vue-router、webpack</h2><blockquote><p>因项目需求，需要前后端分离，学习了vue2，及webpack项目构建工具 <a href="http://www.china-hanghua.com/mobile/index/" target="_blank" rel="noopener">线上项目</a></p></blockquote><h2 id="node、express、koa、mysql"><a href="#node、express、koa、mysql" class="headerlink" title="node、express、koa、mysql"></a>node、express、koa、mysql</h2><blockquote><p><del>学习的express，MySQL，搭建后台管理，及前台页面，i18n国际化</del> <a href="http://www.hbshimo.com/index?lg=zh" target="_blank" rel="noopener">线上项目</a></p></blockquote><hr><h1 id="2019规划"><a href="#2019规划" class="headerlink" title="2019规划"></a>2019规划</h1><p>&nbsp;</p><blockquote><p>依然在前端路上前行，既然选择了前端，便只顾HTML、JS</p></blockquote><ul><li><del>搭建一个博客</del></li><li>学习一个新的框架</li><li>考驾照</li></ul><p>其他的一些 <del><em>想起来再说</em></del> 就是没了(.=^・ェ・^=)</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 随笔 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 年终总结 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
   
   
 </search>

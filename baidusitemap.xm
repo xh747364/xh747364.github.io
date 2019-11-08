@@ -16,6 +16,9 @@
     <loc>/2019/07/22/log1/</loc>
     <lastmod>2019-07-22</lastmod>
   </url>  <url>
+    <loc>/2018/12/31/2018%E6%80%BB%E7%BB%93/</loc>
+    <lastmod>2019-07-21</lastmod>
+  </url>  <url>
     <loc>/2019/07/20/HelloWord/</loc>
     <lastmod>2019-07-20</lastmod>
   </url>  <url>
