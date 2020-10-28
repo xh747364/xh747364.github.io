@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>/2019/07/05/stickyFooter/</loc>
+    
+    <lastmod>2019-12-25T14:28:44.733Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>/2019/08/30/antDesignVue/</loc>
+    
+    <lastmod>2019-12-25T14:28:44.729Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>/about/index.html</loc>
     
     <lastmod>2019-11-08T12:36:05.644Z</lastmod>
@@ -23,23 +37,9 @@
   </url>
   
   <url>
-    <loc>/2019/11/05/stickyFooter/</loc>
-    
-    <lastmod>2019-11-06T11:49:19.671Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>/2019/07/04/someRegExp/</loc>
     
     <lastmod>2019-11-05T11:11:45.902Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>/2019/08/30/antDesignVue/</loc>
-    
-    <lastmod>2019-11-05T11:11:45.900Z</lastmod>
     
   </url>
   
