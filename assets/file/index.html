@@ -1,83 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-      .container {
-        width: 300px;
-        color: #161823;
-        font-size: 15px;
-        line-height: 26px;
-        word-break: break-all;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
-      }
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		.container {
+			width: 300px;
+			color: #161823;
+			font-size: 15px;
+			line-height: 26px;
+			word-break: break-all;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+			overflow: hidden;
+		}
 
-      .container::before {
-        content: '';
-        float: right;
-        width: 0;
-        height: 26px;
-        background: red;
-      }
+		.container::before {
+			content: '';
+			float: right;
+			width: 0;
+			height: 26px;
+			background: red;
+		}
 
-      .more {
-        font-weight: 500;
-        float: right;
-        clear: both;
-        color: #161823;
-        font-size: 15px;
-        line-height: 26px;
-        word-break: break-all;
-      }
-    </style>
-  </head>
+		.more {
+			font-weight: 500;
+			float: right;
+			clear: both;
+			color: #161823;
+			font-size: 15px;
+			line-height: 26px;
+			word-break: break-all;
+		}
+	</style>
+</head>
 
-  <body>
-    <button onclick="getK8sData()">继续请求</button>
-<iframe width="1080" height="1920" frameborder="0" src="https://open.douyin.com/player/video?vid=7272647263455907083&autoplay=0" referrerpolicy="unsafe-url" allowfullscreen></iframe>
-  </body>
+<body>
+	<button onclick="getK8sData()">继续请求</button>
+	<iframe width="1080" height="1920" frameborder="0"
+		src="https://open.douyin.com/player/video?vid=7272647263455907083&autoplay=0"
+		referrerpolicy="unsafe-url" allowfullscreen></iframe>
+</body>
 
 </html>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
 <script>
-  // 创建一个模拟axios的函数
-  const axios = () => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => resolve({
-        success: true
-      }), 3000)
-    });
-  }
+var vConsole = new VConsole();
+// 创建一个模拟axios的函数
+const axios = () => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => resolve({
+			success: true
+		}), 3000)
+	});
+}
 
-  let lastPromise = null;
+let lastPromise = null;
 
-  // 创建获取数据的函数
-  const getK8sData = () => {
-    // 模拟请求
-    const currentPromise = axios();
-    lastPromise = currentPromise;
+// 创建获取数据的函数
+const getK8sData = () => {
+	// 模拟请求
+	const currentPromise = axios();
+	lastPromise = currentPromise;
 
-    Promise.race([currentPromise, lastPromise])
-      .then(res => {
-        // 只有当currentPromise仍然是lastPromise时才处理响应
-        if (currentPromise === lastPromise) {
-          console.log("请求成功", res);
-          // 处理你的响应
-        }
-      })
-      .catch(error => {
-        // 只有当currentPromise仍然是lastPromise时才处理错误
-        if (currentPromise === lastPromise) {
-          console.log("请求失败", error);
-          // 处理错误
-        }
-      });
-  }
+	Promise.race([currentPromise, lastPromise])
+		.then(res => {
+			// 只有当currentPromise仍然是lastPromise时才处理响应
+			if (currentPromise === lastPromise) {
+				console.log("请求成功", res);
+				// 处理你的响应
+			}
+		})
+		.catch(error => {
+			// 只有当currentPromise仍然是lastPromise时才处理错误
+			if (currentPromise === lastPromise) {
+				console.log("请求失败", error);
+				// 处理错误
+			}
+		});
+}
 </script>
