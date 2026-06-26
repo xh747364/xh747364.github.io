@@ -1,1 +1,1056 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>梦幻西游五开记账本</title>
+    <!-- 引入 Tesseract.js 进行纯前端 OCR 识别 -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <style>
+        :root {
+            --primary: #1890ff;
+            --success: #52c41a;
+            --danger: #ff4d4f;
+            --warning: #faad14;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-secondary: #8c8c8c;
+            --border: #e8e8e8;
+        }
 
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 比例设置 */
+        .rate-setting {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: #e6f7ff;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #91d5ff;
+        }
+        .rate-setting input {
+            width: 80px;
+            text-align: center;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .col {
+            flex: 1;
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        .btn-primary {
+            color: #fff;
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .btn-primary:hover {
+            background-color: #40a9ff;
+            border-color: #40a9ff;
+        }
+        .btn-danger {
+            color: #fff;
+            background-color: var(--danger);
+            border-color: var(--danger);
+            padding: 4px 8px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        /* 统计数据 */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: #fafafa;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-box.highlight {
+            background: #fffbe6;
+            border-color: #ffe58f;
+        }
+        .stat-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .stat-value.rmb {
+            color: var(--danger);
+        }
+
+        /* 表格 */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background-color: #fafafa;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
+        .income { color: var(--success); font-weight: bold; }
+        .expense { color: var(--danger); font-weight: bold; }
+
+        .date-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .price-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .price-item label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .price-item input {
+            padding: 6px 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .price-item input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 左侧：录入与设置 -->
+    <div class="left-panel">
+        <div class="card" style="margin-bottom: 20px;">
+            <h2 class="card-title">💰 基础设置</h2>
+            <div class="rate-setting">
+                <input type="number" id="rateMhb" class="form-control" value="3000" onchange="saveRate()"> 
+                <span>万 =</span>
+                <input type="number" id="rateRmb" class="form-control" value="230" onchange="saveRate()"> 
+                <span>元</span>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="openPriceModal()" style="margin-bottom: 10px; width: auto; margin-right: 10px;">⚙️ 批量预设单价</button>
+                <button class="btn" style="margin-bottom: 10px; width: auto; background-color: #e6f7ff; border-color: #91d5ff; color: var(--primary);" onclick="openGemModal()">💎 宝石合成消耗表</button>
+            </div>
+            <small style="color: var(--text-secondary); display: block;">修改比例后，所有记录的人民币估值将自动按新比例重新计算。预设物品单价后，每次选择物品将自动填入固定价格。</small>
+        </div>
+
+        <!-- 截图识别区 -->
+        <div class="card" style="margin-bottom: 20px;">
+            <h2 class="card-title">📷 截图/粘贴识别</h2>
+            <div class="form-group paste-area" id="pasteArea">
+                <div style="text-align: center; padding: 20px; border: 2px dashed #91d5ff; background: #e6f7ff; border-radius: 8px; margin-bottom: 10px;">
+                    <p style="margin: 0; font-size: 16px; color: var(--primary); font-weight: bold;">
+                        直接按 Ctrl+V (或 Cmd+V) 粘贴截图
+                    </p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: var(--text-secondary);">
+                        或点击下方按钮选择图片
+                    </p>
+                </div>
+                <input type="file" id="uploadImg" accept="image/*" class="form-control" onchange="handleImageUpload(event)">
+                <small style="color: var(--text-secondary); display: block; margin-top: 5px;">
+                    <strong>技术说明：</strong>纯前端单文件暂时无法做到“纯图标图像比对”（需要庞大的图片库和AI模型）。目前的折中方案是：<strong>请截图时带上物品的名称文字（例如鼠标悬浮时的提示框）</strong>，系统会通过文字识别出物品并自动填入。
+                </small>
+            </div>
+            <div id="ocrPreview" style="display:none; text-align: center; margin-bottom: 10px;">
+                <img id="previewImg" style="max-width: 100%; max-height: 150px; border-radius: 4px; border: 1px solid var(--border);" />
+            </div>
+            <div id="ocrStatus" style="display:none; color: var(--primary); margin-bottom: 10px; font-size: 14px;">
+                ⏳ 正在识别截图内容中，请稍候... <span id="ocrProgress" style="font-weight: bold;">0%</span>
+            </div>
+            <div id="ocrResults" style="display:none; background: #f6ffed; border: 1px solid #b7eb8f; padding: 10px; border-radius: 4px;">
+                <div style="margin-bottom: 10px; font-size: 14px; font-weight: bold; color: var(--success);">✅ 识别到以下物品（点击即可自动填入表单）：</div>
+                <div id="ocrTags" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">✍️ 记一笔</h2>
+            <form id="recordForm">
+                <div class="form-group">
+                    <label>日期</label>
+                    <input type="date" id="recordDate" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>物品/收支类型</label>
+                    <select id="itemSelect" class="form-control" onchange="handleItemChange()" required>
+                        <option value="">-- 请选择 --</option>
+                        <optgroup label="基础货币">
+                            <option value="梦幻币(收入)">梦幻币(收入)</option>
+                            <option value="梦幻币(支出)">梦幻币(支出)</option>
+                        </optgroup>
+                        <optgroup label="五宝">
+                            <option value="特赦令牌">特赦令牌</option>
+                            <option value="定魂珠">定魂珠</option>
+                            <option value="金刚石">金刚石</option>
+                            <option value="夜光珠">夜光珠</option>
+                            <option value="龙鳞">龙鳞</option>
+                            <option value="避水珠">避水珠</option>
+                        </optgroup>
+                        <optgroup label="宝石">
+                            <option value="黑宝石">黑宝石</option>
+                            <option value="玛瑙石">玛瑙石</option>
+                            <option value="星辉石">星辉石</option>
+                            <option value="太阳石">太阳石</option>
+                            <option value="舍利子">舍利子</option>
+                            <option value="月亮石">月亮石</option>
+                            <option value="光芒石">光芒石</option>
+                            <option value="翡翠石">翡翠石</option>
+                        </optgroup>
+                        <optgroup label="消耗品">
+                            <option value="藏宝图">藏宝图</option>
+                            <option value="金柳露">金柳露</option>
+                            <option value="超级金柳露">超级金柳露</option>
+                            <option value="净瓶玉露">净瓶玉露</option>
+                            <option value="超级净瓶玉露">超级净瓶玉露</option>
+                            <option value="修炼果">修炼果</option>
+                            <option value="月华露">月华露</option>
+                            <option value="摇钱树苗">摇钱树苗</option>
+                            <option value="海马">海马</option>
+                            <option value="珍珠">珍珠</option>
+                        </optgroup>
+                        <optgroup label="兽诀&内丹">
+                            <option value="魔兽要诀">魔兽要诀</option>
+                            <option value="高级魔兽要诀">高级魔兽要诀</option>
+                            <option value="低级内丹">低级内丹</option>
+                            <option value="高级内丹">高级内丹</option>
+                        </optgroup>
+                        <optgroup label="环装">
+                            <option value="60武器">60武器</option>
+                            <option value="60装备">60装备</option>
+                            <option value="70武器">70武器</option>
+                            <option value="70装备">70装备</option>
+                            <option value="80武器">80武器</option>
+                            <option value="80装备">80装备</option>
+                        </optgroup>
+                        <optgroup label="强化&制造">
+                            <option value="强化石">强化石</option>
+                            <option value="制造指南书">制造指南书</option>
+                            <option value="百炼精铁">百炼精铁</option>
+                            <option value="炼妖石">炼妖石</option>
+                        </optgroup>
+                        <optgroup label="灵饰书 (戒指/耳饰)">
+                            <option value="60戒指书">60戒指书</option>
+                            <option value="80戒指书">80戒指书</option>
+                            <option value="100戒指书">100戒指书</option>
+                            <option value="120戒指书">120戒指书</option>
+                            <option value="140戒指书">140戒指书</option>
+                            <option value="60耳饰书">60耳饰书</option>
+                            <option value="80耳饰书">80耳饰书</option>
+                            <option value="100耳饰书">100耳饰书</option>
+                            <option value="120耳饰书">120耳饰书</option>
+                            <option value="140耳饰书">140耳饰书</option>
+                        </optgroup>
+                        <optgroup label="灵饰书 (手镯/配饰)">
+                            <option value="60手镯书">60手镯书</option>
+                            <option value="80手镯书">80手镯书</option>
+                            <option value="100手镯书">100手镯书</option>
+                            <option value="120手镯书">120手镯书</option>
+                            <option value="140手镯书">140手镯书</option>
+                            <option value="60配饰书">60配饰书</option>
+                            <option value="80配饰书">80配饰书</option>
+                            <option value="100配饰书">100配饰书</option>
+                            <option value="120配饰书">120配饰书</option>
+                            <option value="140配饰书">140配饰书</option>
+                        </optgroup>
+                        <optgroup label="元灵晶石">
+                            <option value="60元灵晶石">60元灵晶石</option>
+                            <option value="80元灵晶石">80元灵晶石</option>
+                            <option value="100元灵晶石">100元灵晶石</option>
+                            <option value="120元灵晶石">120元灵晶石</option>
+                            <option value="140元灵晶石">140元灵晶石</option>
+                        </optgroup>
+                        <optgroup label="其他">
+                            <option value="金银锦盒">金银锦盒</option>
+                            <option value="彩果">彩果</option>
+                            <option value="符石">符石</option>
+                            <option value="自定义">自定义...</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group" id="customNameGroup" style="display: none;">
+                    <label>自定义物品名称</label>
+                    <input type="text" id="customName" class="form-control" placeholder="输入物品名称">
+                </div>
+
+                <div class="row">
+                    <div class="col form-group">
+                        <label>单价 (万梦幻币)</label>
+                        <input type="number" id="itemPrice" class="form-control" step="0.01" required>
+                    </div>
+                    <div class="col form-group">
+                        <label>数量</label>
+                        <input type="number" id="itemQty" class="form-control" value="1" min="1" step="1" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">添加记录</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 右侧：数据展示 -->
+    <div class="right-panel">
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="card-title">
+                <span>📊 数据概览</span>
+                <div class="date-filter">
+                    <span style="font-size: 14px; font-weight: normal;">筛选:</span>
+                    <input type="date" id="filterDate" class="form-control" style="width: auto; padding: 4px 8px;" onchange="renderRecords()">
+                    <button class="btn" style="width: auto; padding: 4px 8px; border: 1px solid var(--border);" onclick="clearFilter()">全部</button>
+                </div>
+            </div>
+            
+            <div class="summary-grid">
+                <div class="stat-box highlight">
+                    <div class="stat-title">所选日期 梦幻币收益</div>
+                    <div class="stat-value" id="todayMhb">0</div>
+                </div>
+                <div class="stat-box highlight">
+                    <div class="stat-title">所选日期 预估人民币 (元)</div>
+                    <div class="stat-value rmb" id="todayRmb">0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">累计总收益</div>
+                    <div class="stat-value" id="totalMhb">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">累计预估人民币 (元)</div>
+                    <div class="stat-value rmb" id="totalRmb">0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📋 记录明细</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>物品名称</th>
+                            <th class="text-right">单价</th>
+                            <th class="text-center">数量</th>
+                            <th class="text-right">总价</th>
+                            <th class="text-right">预估(元)</th>
+                            <th class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordTableBody">
+                        <!-- 动态渲染 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 价格设置弹窗 -->
+<div id="priceModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2 class="card-title">⚙️ 批量预设固定单价 (单位：万梦幻币)</h2>
+        <div class="price-grid" id="priceGrid">
+            <!-- 动态渲染 -->
+        </div>
+        <div style="text-align: right; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--danger); font-size: 14px; margin: 0;">
+                <input type="checkbox" id="syncHistoryPrice"> 同步修改历史记录中的价格
+            </label>
+            <div>
+                <button class="btn" style="width: auto; margin-right: 10px; background: #f5f5f5; color: #333;" onclick="closePriceModal()">取消</button>
+                <button class="btn btn-primary" style="width: auto;" onclick="saveAllPrices()">保存设置</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 宝石合成表弹窗 -->
+<div id="gemModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 800px;">
+        <h2 class="card-title">💎 宝石合成消耗表</h2>
+        <div class="row" style="margin-bottom: 15px; align-items: flex-end;">
+            <div class="col form-group" style="margin-bottom: 0;">
+                <label>宝石/灵尘类型</label>
+                <select id="gemCalcType" class="form-control" onchange="renderGemTable()">
+                    <option value="2">普通宝石 (2合1)</option>
+                    <option value="3">星辉石 (3合1)</option>
+                    <option value="4">五色灵尘 (特殊合成)</option>
+                </select>
+            </div>
+            <div class="col form-group" style="margin-bottom: 0;">
+                <label>1级单价 (万)</label>
+                <input type="number" id="gemCalcPrice" class="form-control" value="5" step="0.01" oninput="renderGemTable()">
+            </div>
+            <div class="col" style="flex: 0 0 auto;">
+                <button class="btn btn-primary" onclick="renderGemTable()">计算</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-center">宝石等级</th>
+                        <th class="text-right">需要1级数量</th>
+                        <th class="text-right">总成本</th>
+                        <th class="text-right">折合人民币(元)</th>
+                    </tr>
+                </thead>
+                <tbody id="gemTableBody">
+                    <!-- 动态渲染 -->
+                </tbody>
+            </table>
+        </div>
+        <div style="text-align: right; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+            <button class="btn" style="width: auto; background: #f5f5f5; color: #333;" onclick="closeGemModal()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 图像识别处理核心逻辑
+    function processImage(imageSource) {
+        const statusEl = document.getElementById('ocrStatus');
+        const progressEl = document.getElementById('ocrProgress');
+        const resultsEl = document.getElementById('ocrResults');
+        const tagsEl = document.getElementById('ocrTags');
+        const previewEl = document.getElementById('ocrPreview');
+        const previewImg = document.getElementById('previewImg');
+
+        statusEl.style.display = 'block';
+        resultsEl.style.display = 'none';
+        tagsEl.innerHTML = '';
+        
+        // 显示预览图
+        previewEl.style.display = 'block';
+        if (imageSource instanceof File || imageSource instanceof Blob) {
+            previewImg.src = URL.createObjectURL(imageSource);
+        } else {
+            previewImg.src = imageSource;
+        }
+
+        // 调用 Tesseract.js 进行中文识别
+        Tesseract.recognize(
+            imageSource,
+            'chi_sim', // 简体中文
+            { logger: m => {
+                if (m.status === 'recognizing text') {
+                    progressEl.innerText = Math.round(m.progress * 100) + '%';
+                }
+            }}
+        ).then(({ data: { text } }) => {
+            statusEl.style.display = 'none';
+            
+            // 提取所有的已知物品字典
+            const allItemNames = [];
+            document.querySelectorAll('#itemSelect option').forEach(opt => {
+                if (opt.value && opt.value !== '自定义' && !opt.value.includes('梦幻币')) {
+                    allItemNames.push(opt.value);
+                }
+            });
+
+            // 匹配文本中的物品名称
+            const foundItems = new Set();
+            let cleanText = text.replace(/\s+/g, ''); // 去除所有空格和换行等干扰字符
+            
+            // 按名称长度降序排列，优先匹配长字符串，解决“超级净瓶玉露”包含“净瓶玉露”导致重复识别的问题
+            allItemNames.sort((a, b) => b.length - a.length);
+
+            allItemNames.forEach(name => {
+                if (cleanText.includes(name)) {
+                    foundItems.add(name);
+                    // 匹配到后将其替换掉，防止它的子串（如“净瓶玉露”、“金柳露”、“魔兽要诀”）被二次匹配
+                    cleanText = cleanText.split(name).join('已匹配');
+                }
+            });
+
+            if (foundItems.size > 0) {
+                resultsEl.style.display = 'block';
+                foundItems.forEach(name => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn btn-primary';
+                    btn.style.width = 'auto';
+                    btn.style.padding = '4px 8px';
+                    btn.style.fontSize = '12px';
+                    btn.innerText = name;
+                    btn.onclick = () => {
+                        // 点击物品标签，自动选入表单
+                        document.getElementById('itemSelect').value = name;
+                        handleItemChange();
+                        // 滚动到表单以便用户填写数量
+                        document.getElementById('recordForm').scrollIntoView({behavior: 'smooth', block: 'center'});
+                    };
+                    tagsEl.appendChild(btn);
+                });
+            } else {
+                alert('未在截图中识别到内置列表中的物品名称。\\n（提示：纯图标可能无法识别，请确保截图中包含物品的文字名称，如悬浮提示）');
+            }
+        }).catch(err => {
+            console.error(err);
+            alert('识别出错，请检查网络或图片格式。');
+            statusEl.style.display = 'none';
+        });
+    }
+
+    // 处理文件上传
+    window.handleImageUpload = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        processImage(file);
+        event.target.value = ''; // 重置 input 允许重复上传相同图片
+    }
+
+    // 处理全局粘贴事件 (Ctrl+V / Cmd+V)
+    document.addEventListener('paste', function(e) {
+        const clipboardData = e.clipboardData || e.originalEvent.clipboardData;
+        if (!clipboardData) return;
+        
+        const items = clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const blob = items[i].getAsFile();
+                if (blob) {
+                    processImage(blob);
+                    e.preventDefault();
+                    return;
+                }
+            }
+        }
+    });
+
+    // 批量设置价格弹窗逻辑
+    window.openPriceModal = function() {
+        const grid = document.getElementById('priceGrid');
+        grid.innerHTML = '';
+        
+        const allItemNames = [];
+        document.querySelectorAll('#itemSelect option').forEach(opt => {
+            if (opt.value && opt.value !== '自定义' && !opt.value.includes('梦幻币')) {
+                allItemNames.push(opt.value);
+            }
+        });
+
+        allItemNames.forEach(name => {
+            const currentPrice = state.prices[name] !== undefined ? Math.abs(state.prices[name]) : '';
+            const div = document.createElement('div');
+            div.className = 'price-item';
+            div.innerHTML = `
+                <label>${name}</label>
+                <input type="number" step="0.01" data-name="${name}" value="${currentPrice}" placeholder="未设置">
+            `;
+            grid.appendChild(div);
+        });
+
+        document.getElementById('priceModal').style.display = 'flex';
+    }
+
+    window.closePriceModal = function() {
+        document.getElementById('priceModal').style.display = 'none';
+    }
+
+    window.saveAllPrices = function() {
+        const inputs = document.querySelectorAll('#priceGrid input');
+        const syncHistory = document.getElementById('syncHistoryPrice').checked;
+        let historyUpdatedCount = 0;
+
+        inputs.forEach(input => {
+            const name = input.getAttribute('data-name');
+            const val = parseFloat(input.value);
+            if (!isNaN(val)) {
+                state.prices[name] = val;
+
+                if (syncHistory) {
+                    // 同步更新所有历史记录中对应物品的单价
+                    state.records.forEach(record => {
+                        if (record.name === name) {
+                            const sign = record.price < 0 ? -1 : 1;
+                            record.price = val * sign;
+                            historyUpdatedCount++;
+                        }
+                    });
+                }
+            }
+        });
+        saveState();
+        closePriceModal();
+        
+        // 如果当前表单已经选中了某个物品，刷新一下价格输入框
+        handleItemChange();
+        renderRecords();
+
+        if (syncHistory && historyUpdatedCount > 0) {
+            alert(`已成功同步更新 ${historyUpdatedCount} 条历史记录的价格！`);
+        }
+    }
+
+    // 宝石合成计算器逻辑
+    window.openGemModal = function() {
+        document.getElementById('gemModal').style.display = 'flex';
+        renderGemTable();
+    }
+
+    window.closeGemModal = function() {
+        document.getElementById('gemModal').style.display = 'none';
+    }
+
+    window.renderGemTable = function() {
+        const type = parseInt(document.getElementById('gemCalcType').value);
+        const price1 = parseFloat(document.getElementById('gemCalcPrice').value) || 0;
+        const tbody = document.getElementById('gemTableBody');
+        const rmbRate = state.rateRmb / state.rateMhb; // 每万梦幻币折合多少人民币
+        
+        tbody.innerHTML = '';
+        
+        let qty = 1;
+        
+        // 五色灵尘的特殊计算变量
+        let qtyPrev2 = 1; // 低2级的数量
+        let qtyPrev1 = 2; // 低1级的数量
+        
+        // 普通宝石渲染到15级，星辉石渲染到11级，五色灵尘渲染到15级
+        const maxLevel = type === 3 ? 11 : 15; 
+        
+        for (let level = 1; level <= maxLevel; level++) {
+            if (type === 2 || type === 3) {
+                // 普通宝石和星辉石
+                if (level > 1) {
+                    qty = qty * type;
+                }
+            } else if (type === 4) {
+                // 五色灵尘
+                if (level === 1) {
+                    qty = 1;
+                } else if (level === 2) {
+                    qty = 2;
+                } else {
+                    // 合成3级及以上的五色灵尘，需要2个低1级的和1个低2级的
+                    qty = 2 * qtyPrev1 + qtyPrev2;
+                    qtyPrev2 = qtyPrev1;
+                    qtyPrev1 = qty;
+                }
+            }
+            
+            const totalMhb = qty * price1;
+            const totalRmb = totalMhb * rmbRate;
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-center"><strong>${level} 级</strong></td>
+                <td class="text-right">${qty}</td>
+                <td class="text-right">${formatMhb(totalMhb)}</td>
+                <td class="text-right" style="color: var(--danger); font-weight: bold;">${totalRmb.toFixed(2)}</td>
+            `;
+            tbody.appendChild(tr);
+        }
+    }
+
+    // 状态管理
+    let state = {
+        rateMhb: 3000,
+        rateRmb: 230,
+        prices: {
+            "梦幻币(收入)": 1,
+            "梦幻币(支出)": -1
+        },
+        records: []
+    };
+
+    // 初始化加载
+    function init() {
+        const savedState = localStorage.getItem('mhxy_wukai_state');
+        if (savedState) {
+            const parsed = JSON.parse(savedState);
+            state.rateMhb = parsed.rateMhb || 3000;
+            state.rateRmb = parsed.rateRmb || 230;
+            state.prices = parsed.prices || state.prices;
+            state.records = parsed.records || [];
+        }
+
+        // 设置默认日期为今天
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('recordDate').value = today;
+        document.getElementById('filterDate').value = today;
+
+        // 恢复比例输入框
+        document.getElementById('rateMhb').value = state.rateMhb;
+        document.getElementById('rateRmb').value = state.rateRmb;
+
+        renderRecords();
+    }
+
+    // 保存状态到本地
+    function saveState() {
+        localStorage.setItem('mhxy_wukai_state', JSON.stringify(state));
+    }
+
+    // 保存比例
+    window.saveRate = function() {
+        state.rateMhb = parseFloat(document.getElementById('rateMhb').value) || 3000;
+        state.rateRmb = parseFloat(document.getElementById('rateRmb').value) || 230;
+        saveState();
+        renderRecords(); // 比例变动，重新渲染并计算RMB
+    }
+
+    // 物品选择变动逻辑
+    window.handleItemChange = function() {
+        const select = document.getElementById('itemSelect');
+        const customGroup = document.getElementById('customNameGroup');
+        const priceInput = document.getElementById('itemPrice');
+        
+        const itemName = select.value;
+
+        if (itemName === '自定义') {
+            customGroup.style.display = 'block';
+            priceInput.value = '';
+        } else {
+            customGroup.style.display = 'none';
+            // 自动填入记忆的单价
+            if (state.prices[itemName] !== undefined) {
+                priceInput.value = Math.abs(state.prices[itemName]);
+            } else {
+                priceInput.value = '';
+            }
+        }
+    }
+
+    // 提交表单
+    document.getElementById('recordForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const date = document.getElementById('recordDate').value;
+        const selectValue = document.getElementById('itemSelect').value;
+        const customName = document.getElementById('customName').value;
+        
+        const itemName = selectValue === '自定义' ? customName : selectValue;
+        if (!itemName) {
+            alert('请输入物品名称！');
+            return;
+        }
+
+        let price = parseFloat(document.getElementById('itemPrice').value);
+        const qty = parseInt(document.getElementById('itemQty').value, 10);
+
+        // 如果是支出，单价转为负数处理
+        if (itemName.includes('支出') || (selectValue === '梦幻币(支出)')) {
+            price = -Math.abs(price);
+        } else if (selectValue === '梦幻币(收入)') {
+            price = Math.abs(price);
+        }
+
+        const newRecord = {
+            id: Date.now(),
+            date: date,
+            name: itemName,
+            price: price,
+            qty: qty
+        };
+
+        // 保存单价记忆 (不记忆纯梦幻币记录的单价，因为它们通常固定为1)
+        if (selectValue !== '梦幻币(收入)' && selectValue !== '梦幻币(支出)') {
+            state.prices[itemName] = price;
+        }
+
+        state.records.push(newRecord);
+        saveState();
+
+        // 重置表单部分字段
+        document.getElementById('itemQty').value = 1;
+        if (selectValue === '自定义') {
+            document.getElementById('customName').value = '';
+            document.getElementById('itemPrice').value = '';
+        }
+
+        renderRecords();
+    });
+
+    // 单条记录改价
+    window.editRecordPrice = function(id) {
+        const record = state.records.find(r => r.id === id);
+        if (!record) return;
+        const currentAbsPrice = Math.abs(record.price);
+        
+        const newPriceStr = prompt(`请输入【${record.name}】的新单价 (当前: ${currentAbsPrice} 万)：`, currentAbsPrice);
+        if (newPriceStr === null) return; // 用户点击取消
+        
+        const newPrice = parseFloat(newPriceStr);
+        if (isNaN(newPrice) || newPrice <= 0) {
+            alert("请输入有效的价格！");
+            return;
+        }
+        
+        const sign = record.price < 0 ? -1 : 1;
+        record.price = newPrice * sign;
+        saveState();
+        renderRecords();
+    }
+
+    // 删除记录
+    window.deleteRecord = function(id) {
+        if(confirm('确定要删除这条记录吗？')) {
+            state.records = state.records.filter(r => r.id !== id);
+            saveState();
+            renderRecords();
+        }
+    }
+
+    // 清除日期筛选
+    window.clearFilter = function() {
+        document.getElementById('filterDate').value = '';
+        renderRecords();
+    }
+
+    // 梦幻币格式化 (匹配游戏内颜色规范)
+    function formatMhb(valInWan) {
+        if (valInWan === 0 || isNaN(valInWan)) return '<span style="color: var(--text-secondary); font-weight: bold;">0</span>';
+        const absVal = Math.abs(valInWan);
+        let text = '';
+        
+        if (absVal >= 10000) {
+            const yi = Math.floor(absVal / 10000);
+            const wan = absVal % 10000;
+            const wanStr = wan > 0 ? (wan % 1 === 0 ? wan : wan.toFixed(2).replace(/\.0+$/, '')) + '万' : '';
+            text = `${yi}亿${wanStr}`;
+        } else if (absVal >= 1) {
+            text = `${(absVal % 1 === 0 ? absVal : absVal.toFixed(2).replace(/\.0+$/, ''))}万`;
+        } else {
+            text = `${Math.round(absVal * 10000)}`;
+        }
+        
+        const sign = valInWan < 0 ? '-' : '';
+        text = sign + text;
+
+        let color = '';
+        if (absVal >= 1000) {
+            color = '#eb2f96'; // 粉紫 (1000万+)
+        } else if (absVal >= 100) {
+            color = '#08979c'; // 青蓝 (100万~999万)
+        } else if (absVal >= 1) {
+            color = '#52c41a'; // 绿色 (1万~99万)
+        } else {
+            color = 'var(--text-main)'; // 默认黑/白 (<1万)
+        }
+
+        return `<span style="color: ${color}; font-weight: bold;">${text}</span>`;
+    }
+
+    // 渲染表格和统计
+    window.renderRecords = function() {
+        const tbody = document.getElementById('recordTableBody');
+        const filterDate = document.getElementById('filterDate').value;
+        
+        tbody.innerHTML = '';
+
+        let todayMhbTotal = 0;
+        let allMhbTotal = 0;
+
+        // 计算 RMB 的汇率倍数
+        const rmbMultiplier = state.rateRmb / state.rateMhb;
+
+        // 倒序排列
+        const sortedRecords = [...state.records].sort((a, b) => {
+            if(a.date !== b.date) return new Date(b.date) - new Date(a.date);
+            return b.id - a.id;
+        });
+
+        sortedRecords.forEach(record => {
+            const totalMhb = record.price * record.qty;
+            allMhbTotal += totalMhb;
+
+            const isFilteredDate = filterDate ? record.date === filterDate : false;
+            if (isFilteredDate) {
+                todayMhbTotal += totalMhb;
+            }
+
+            // 如果当前在筛选模式下，且该记录不属于该日期，则不渲染在表格中
+            if (filterDate && record.date !== filterDate) return;
+
+            const totalRmb = totalMhb * rmbMultiplier;
+            const isPositive = totalMhb >= 0;
+            const colorClass = isPositive ? 'income' : 'expense';
+            const sign = isPositive ? '+' : '';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${record.date}</td>
+                <td><strong>${record.name}</strong></td>
+                <td class="text-right">${formatMhb(Math.abs(record.price))}</td>
+                <td class="text-center">${record.qty}</td>
+                <td class="text-right">${formatMhb(totalMhb)}</td>
+                <td class="text-right ${colorClass}">${sign}${totalRmb.toFixed(2)}</td>
+                <td class="text-center">
+                    <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; width: auto; margin-right: 5px; background: #faad14; border-color: #faad14;" onclick="editRecordPrice(${record.id})">改价</button>
+                    <button class="btn btn-danger" onclick="deleteRecord(${record.id})">删除</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        if (tbody.innerHTML === '') {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="color: var(--text-secondary); padding: 30px;">暂无记录</td></tr>';
+        }
+
+        // 更新统计面板
+        if (!filterDate) {
+            document.getElementById('todayMhb').innerHTML = '-';
+            document.getElementById('todayRmb').textContent = '-';
+        } else {
+            document.getElementById('todayMhb').innerHTML = formatMhb(todayMhbTotal);
+            document.getElementById('todayRmb').textContent = (todayMhbTotal * rmbMultiplier).toFixed(2);
+            
+            document.getElementById('todayMhb').className = `stat-value`;
+            document.getElementById('todayRmb').className = `stat-value rmb ${todayMhbTotal >= 0 ? 'income' : 'expense'}`;
+        }
+
+        document.getElementById('totalMhb').innerHTML = formatMhb(allMhbTotal);
+        document.getElementById('totalRmb').textContent = (allMhbTotal * rmbMultiplier).toFixed(2);
+        
+        document.getElementById('totalMhb').className = `stat-value`;
+        document.getElementById('totalRmb').className = `stat-value rmb ${allMhbTotal >= 0 ? 'income' : 'expense'}`;
+    }
+
+    // 启动
+    init();
+</script>
+
+</body>
+</html>
