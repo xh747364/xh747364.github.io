@@ -1,0 +1,6190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>仙逆·寻道</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        ink:       'hsl(222 47% 8%)',
+        'ink-2':   'hsl(222 42% 13%)',
+        'ink-3':   'hsl(222 38% 18%)',
+        'ink-4':   'hsl(222 33% 25%)',
+        gold:      'hsl(42 85% 62%)',
+        'gold-2':  'hsl(42 70% 48%)',
+        'gold-dim':'hsl(42 40% 50%)',
+        crimson:   'hsl(0 70% 55%)',
+        jade:      'hsl(150 45% 50%)',
+        'text-main': 'hsl(42 30% 82%)',
+        'text-dim':  'hsl(42 15% 60%)',
+      },
+      fontFamily: {
+        title: ['"Ma Shan Zheng"', '"Noto Serif SC"', 'serif'],
+        body:  ['"ZCOOL XiaoWei"', '"Noto Serif SC"', 'serif'],
+        serif: ['"Noto Serif SC"', 'serif'],
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.8s ease-out forwards',
+        'slide-up': 'slideUp 0.6s ease-out forwards',
+        'toast-in': 'toastIn 0.4s ease-out forwards',
+        'toast-out': 'toastOut 0.4s ease-in forwards',
+        'pulse-gold': 'pulseGold 2s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeIn:   { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
+        slideUp:  { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+        toastIn:  { '0%': { opacity: 0, transform: 'translateX(100%)' }, '100%': { opacity: 1, transform: 'translateX(0)' } },
+        toastOut: { '0%': { opacity: 1, transform: 'translateX(0)' }, '100%': { opacity: 0, transform: 'translateX(100%)' } },
+        pulseGold:{ '0%,100%': { textShadow: '0 0 8px hsla(42,85%,62%,0.4)' }, '50%': { textShadow: '0 0 20px hsla(42,85%,62%,0.8)' } },
+        float:    { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+      }
+    }
+  }
+};
+</script>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+img, video { max-width: 100%; height: auto; display: block; }
+body { overflow-wrap: break-word; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: '"ZCOOL XiaoWei"', '"Noto Serif SC"', serif;
+  color: hsl(42 30% 82%);
+  background:
+    radial-gradient(ellipse at top, hsl(222 40% 15%) 0%, transparent 60%),
+    radial-gradient(ellipse at bottom, hsl(240 30% 10%) 0%, transparent 50%),
+    linear-gradient(180deg, hsl(222 47% 6%) 0%, hsl(222 50% 10%) 50%, hsl(240 40% 8%) 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* 水墨装饰边框 */
+.ink-border {
+  position: relative;
+  border: 1px solid hsla(42, 50%, 40%, 0.4);
+  background: linear-gradient(180deg, hsla(222, 45%, 12%, 0.85) 0%, hsla(222, 50%, 8%, 0.9) 100%);
+  backdrop-filter: blur(4px);
+}
+.ink-border::before,
+.ink-border::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid hsl(42 70% 55%);
+  pointer-events: none;
+}
+.ink-border::before {
+  top: -2px; left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+.ink-border::after {
+  bottom: -2px; right: -2px;
+  border-left: none;
+  border-top: none;
+}
+.ink-border .corner-tr,
+.ink-border .corner-bl {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid hsl(42 70% 55%);
+  pointer-events: none;
+}
+.ink-border .corner-tr {
+  top: -2px; right: -2px;
+  border-left: none;
+  border-bottom: none;
+}
+.ink-border .corner-bl {
+  bottom: -2px; left: -2px;
+  border-right: none;
+  border-top: none;
+}
+
+/* 选项卡片 */
+.choice-card {
+  position: relative;
+  padding: 1rem 1.25rem;
+  border: 1px solid hsla(42, 50%, 40%, 0.35);
+  background: linear-gradient(135deg, hsla(222, 40%, 15%, 0.8) 0%, hsla(222, 45%, 10%, 0.9) 100%);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  overflow: hidden;
+}
+.choice-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, hsl(42 70% 55%), hsl(42 40% 35%));
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+.choice-card:hover {
+  border-color: hsla(42, 80%, 60%, 0.7);
+  background: linear-gradient(135deg, hsla(42, 30%, 20%, 0.4) 0%, hsla(222, 45%, 12%, 0.9) 100%);
+  transform: translateX(4px);
+  box-shadow: 0 4px 20px hsla(42, 60%, 40%, 0.2);
+}
+.choice-card:hover::before {
+  transform: scaleY(1);
+}
+.choice-card .choice-title {
+  color: hsl(42 75% 70%);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+.choice-card .choice-desc {
+  color: hsl(42 15% 60%);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* 打字机光标 */
+.typing-cursor::after {
+  content: '▋';
+  color: hsl(42 70% 60%);
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* 进度条 */
+.realm-bar {
+  height: 6px;
+  background: hsla(222, 30%, 20%, 0.8);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.realm-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, hsl(42 60% 45%), hsl(42 85% 65%));
+  border-radius: 3px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 8px hsla(42, 80%, 60%, 0.5);
+}
+
+/* 意境图标小圆 */
+.concept-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: hsla(222, 30%, 10%, 0.5); }
+::-webkit-scrollbar-thumb { background: hsla(42, 40%, 40%, 0.5); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsla(42, 60%, 50%, 0.7); }
+
+/* 标题光晕 */
+.title-glow {
+  text-shadow:
+    0 0 10px hsla(42, 85%, 62%, 0.5),
+    0 0 30px hsla(42, 85%, 62%, 0.3),
+    0 0 60px hsla(42, 60%, 40%, 0.2);
+}
+
+/* 粒子背景装饰 */
+.particle {
+  position: fixed;
+  width: 2px;
+  height: 2px;
+  background: hsla(42, 70%, 60%, 0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: drift linear infinite;
+}
+@keyframes drift {
+  0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10%  { opacity: 0.8; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+}
+
+/* 成就toast */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.toast {
+  min-width: 240px;
+  max-width: 320px;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, hsla(42, 50%, 20%, 0.95), hsla(222, 40%, 12%, 0.95));
+  border: 1px solid hsla(42, 70%, 50%, 0.6);
+  border-left: 3px solid hsl(42 80% 60%);
+  box-shadow: 0 4px 20px hsla(0, 0%, 0%, 0.5);
+  animation: toastIn 0.4s ease-out forwards;
+}
+.toast.leaving {
+  animation: toastOut 0.4s ease-in forwards;
+}
+.toast-icon {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+/* 物品栏格子 */
+.item-slot {
+  width: 36px;
+  height: 36px;
+  border: 1px solid hsla(42, 40%, 40%, 0.4);
+  background: hsla(222, 40%, 12%, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  text-align: center;
+  padding: 2px;
+  line-height: 1.1;
+  cursor: help;
+  position: relative;
+  transition: all 0.2s;
+}
+.item-slot:hover {
+  border-color: hsla(42, 70%, 60%, 0.8);
+  background: hsla(42, 30%, 20%, 0.4);
+}
+.item-slot .item-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: hsla(222, 50%, 10%, 0.98);
+  border: 1px solid hsla(42, 60%, 50%, 0.6);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+.item-slot:hover .item-tooltip {
+  display: block;
+}
+
+/* 结局界面 */
+.ending-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, hsla(222, 50%, 10%, 0.9), hsla(0, 0%, 0%, 0.98));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+/* 分隔符装饰 */
+.divider-ink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  color: hsla(42, 50%, 50%, 0.5);
+}
+.divider-ink::before,
+.divider-ink::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsla(42, 50%, 50%, 0.4), transparent);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .choice-card { padding: 0.75rem 1rem; }
+  .toast { min-width: 200px; max-width: 280px; }
+}
+
+/* 禁止选中文字（游戏区） */
+.game-area {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 章节标题动画 */
+.chapter-title {
+  opacity: 0;
+  animation: chapterFade 2s ease-out forwards;
+}
+@keyframes chapterFade {
+  0%   { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+  30%  { opacity: 1; transform: scale(1); filter: blur(0); }
+  80%  { opacity: 1; transform: scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: scale(1.05); filter: blur(4px); }
+}
+</style>
+</head>
+<body>
+
+<!-- 粒子背景 -->
+<div id="particles"></div>
+
+<!-- 成就Toast容器 -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- 主游戏容器 -->
+<div id="game" class="min-h-screen flex flex-col">
+
+  <!-- 顶部：章节/地点 -->
+  <header class="sticky top-0 z-20 border-b border-gold/20 bg-ink/80 backdrop-blur-sm">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <h1 class="font-title text-xl md:text-2xl text-gold title-glow tracking-wider">仙逆·寻道</h1>
+        <span class="text-gold-dim text-sm hidden md:inline">|</span>
+        <span id="chapterName" class="text-text-dim text-sm font-body">第一章 · 边陲小镇</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btnSave" class="px-3 py-1 text-xs border border-gold/40 text-gold-dim hover:bg-gold/10 hover:text-gold transition-colors font-body">存档</button>
+        <button id="btnLoad" class="px-3 py-1 text-xs border border-gold/40 text-gold-dim hover:bg-gold/10 hover:text-gold transition-colors font-body">读档</button>
+        <button id="btnMenu" class="px-3 py-1 text-xs border border-gold/40 text-gold-dim hover:bg-gold/10 hover:text-gold transition-colors font-body">菜单</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="flex-1 max-w-4xl mx-auto w-full px-4 py-6 pb-48 game-area">
+
+    <!-- 标题界面 -->
+    <div id="titleScreen" class="flex flex-col items-center justify-center min-h-[70vh] text-center">
+      <div class="mb-8 animate-float">
+        <h1 class="font-title text-6xl md:text-8xl text-gold title-glow mb-4 tracking-widest">仙逆</h1>
+        <div class="text-2xl md:text-3xl text-gold-dim font-title tracking-[0.5em] ml-[0.5em]">寻 道</div>
+      </div>
+      <div class="divider-ink w-64"><span>◆</span></div>
+      <p class="text-text-dim max-w-md leading-relaxed mb-10 font-body text-sm md:text-base">
+        天道无情，众生如蚁。<br>
+        一介凡人，何以逆仙？<br>
+        一念成佛，一念成魔，<br>
+        道在心中，路在脚下。
+      </p>
+      <div class="flex flex-col gap-3 w-64">
+        <button id="btnNewGame" class="py-3 border border-gold/60 bg-gradient-to-r from-ink-3 to-ink-2 text-gold hover:from-gold/20 hover:to-gold/10 transition-all font-body text-lg tracking-widest hover:shadow-[0_0_20px_hsla(42,60%,50%,0.3)]">
+          踏入仙途
+        </button>
+        <button id="btnContinue" class="py-3 border border-gold/30 text-gold-dim hover:text-gold hover:border-gold/60 transition-colors font-body tracking-widest">
+          再续前缘
+        </button>
+      </div>
+      <div id="cycleInfo" class="mt-10 text-text-dim text-sm font-body opacity-0 transition-opacity">
+        第 <span id="cycleNum" class="text-gold">一</span> 世轮回
+      </div>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div id="gameScreen" class="hidden">
+
+      <!-- 场景标题 -->
+      <div id="sceneTitle" class="text-center mb-6">
+        <div class="text-gold-dim text-xs tracking-[0.3em] mb-2" id="sceneLocation">朱雀星 · 边陲小镇</div>
+        <h2 class="font-title text-2xl md:text-3xl text-gold" id="sceneName">风起青萍</h2>
+      </div>
+
+      <!-- 主文本区 -->
+      <div id="textContainer" class="ink-border p-6 md:p-8 mb-6 min-h-[240px] cursor-pointer">
+        <span class="corner-tr"></span>
+        <span class="corner-bl"></span>
+        <div id="storyText" class="font-body text-base md:text-lg leading-loose text-text-main whitespace-pre-wrap"></div>
+      </div>
+
+      <!-- 选项区 -->
+      <div id="choicesContainer" class="space-y-3">
+        <!-- 选项卡片动态生成 -->
+      </div>
+
+    </div>
+
+    <!-- 结局界面 -->
+    <div id="endingScreen" class="hidden">
+      <div class="text-center py-12">
+        <div class="text-gold-dim text-sm tracking-[0.5em] mb-4">— 终 —</div>
+        <h2 id="endingTitle" class="font-title text-4xl md:text-6xl text-gold title-glow mb-6">飞升成仙</h2>
+        <div class="divider-ink w-48 mx-auto"><span>◆</span></div>
+        <div id="endingText" class="font-body text-text-main leading-loose max-w-2xl mx-auto mb-10 text-left whitespace-pre-wrap"></div>
+        <div class="divider-ink w-48 mx-auto"><span>◆</span></div>
+        <div id="endingStats" class="text-text-dim text-sm font-body mb-8 space-y-1">
+          <div>境界：<span id="endRealm" class="text-gold">—</span></div>
+          <div>道心：<span id="endDaoxin" class="text-gold">—</span></div>
+          <div>获得成就：<span id="endAchievements" class="text-gold">0</span> 个</div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <button id="btnReincarnate" class="px-8 py-3 border border-gold/60 bg-gradient-to-r from-ink-3 to-ink-2 text-gold hover:from-gold/20 hover:to-gold/10 transition-all font-body tracking-widest">
+            重入轮回
+          </button>
+          <button id="btnBackTitle" class="px-8 py-3 border border-gold/30 text-gold-dim hover:text-gold hover:border-gold/60 transition-colors font-body tracking-widest">
+            返回标题
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 底部状态栏 -->
+  <footer id="statusBar" class="hidden fixed bottom-0 left-0 right-0 z-20 border-t border-gold/20 bg-ink/90 backdrop-blur-sm">
+    <div class="max-w-4xl mx-auto px-4 py-3">
+      <div class="flex flex-wrap items-center gap-4 text-xs font-body">
+        <!-- 境界 -->
+        <div class="flex items-center gap-2 min-w-[140px]">
+          <span class="text-gold-dim">境界</span>
+          <div class="flex-1">
+            <div class="flex justify-between mb-1">
+              <span id="realmName" class="text-gold">凡人</span>
+              <span id="realmProgress" class="text-text-dim">0%</span>
+            </div>
+            <div class="realm-bar">
+              <div id="realmBarFill" class="realm-bar-fill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 道心 -->
+        <div class="flex items-center gap-2">
+          <span class="text-gold-dim">道心</span>
+          <span id="daoxinValue" class="text-gold font-bold">50</span>
+        </div>
+
+        <!-- 意境感悟 -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-gold-dim">意境</span>
+          <div class="flex gap-2 flex-wrap" id="conceptsDisplay">
+            <span class="flex items-center"><span class="concept-dot" style="background:hsl(0,60%,55%)"></span><span class="text-text-dim">生</span></span>
+            <span class="flex items-center"><span class="concept-dot" style="background:hsl(220,60%,55%)"></span><span class="text-text-dim">死</span></span>
+            <span class="flex items-center"><span class="concept-dot" style="background:hsl(280,60%,55%)"></span><span class="text-text-dim">轮</span></span>
+            <span class="flex items-center"><span class="concept-dot" style="background:hsl(35,70%,55%)"></span><span class="text-text-dim">因</span></span>
+            <span class="flex items-center"><span class="concept-dot" style="background:hsl(200,60%,55%)"></span><span class="text-text-dim">岁</span></span>
+            <span class="flex items-center"><span class="concept-dot" style="background:hsl(150,40%,45%)"></span><span class="text-text-dim">真</span></span>
+            <span class="flex items-center"><span class="concept-dot" style="background:hsl(0,70%,45%)"></span><span class="text-text-dim">杀</span></span>
+          </div>
+        </div>
+
+        <!-- 物品栏 -->
+        <div class="flex items-center gap-2">
+          <span class="text-gold-dim">物品</span>
+          <div id="inventoryDisplay" class="flex gap-1">
+            <div class="item-slot text-text-dim/40">空</div>
+            <div class="item-slot text-text-dim/40">空</div>
+            <div class="item-slot text-text-dim/40">空</div>
+          </div>
+        </div>
+
+        <!-- 成就/周目 -->
+        <div class="flex items-center gap-3 ml-auto">
+          <span class="text-text-dim">成就 <span id="achCount" class="text-gold">0</span></span>
+          <span class="text-text-dim">周目 <span id="cycleCount" class="text-gold">一</span></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- 菜单弹窗 -->
+<div id="menuModal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+  <div class="ink-border p-8 w-80 text-center">
+    <span class="corner-tr"></span>
+    <span class="corner-bl"></span>
+    <h3 class="font-title text-2xl text-gold mb-6">游戏菜单</h3>
+    <div class="space-y-3">
+      <button id="menuResume" class="w-full py-2 border border-gold/40 text-gold-dim hover:text-gold hover:border-gold/70 transition-colors font-body">继续游戏</button>
+      <button id="menuSave" class="w-full py-2 border border-gold/40 text-gold-dim hover:text-gold hover:border-gold/70 transition-colors font-body">保存进度</button>
+      <button id="menuLoad" class="w-full py-2 border border-gold/40 text-gold-dim hover:text-gold hover:border-gold/70 transition-colors font-body">读取进度</button>
+      <button id="menuAchievements" class="w-full py-2 border border-gold/40 text-gold-dim hover:text-gold hover:border-gold/70 transition-colors font-body">查看成就</button>
+      <button id="menuRestart" class="w-full py-2 border border-crimson/40 text-crimson/70 hover:text-crimson hover:border-crimson/70 transition-colors font-body">重新开始</button>
+      <button id="menuTitle" class="w-full py-2 border border-gold/30 text-gold-dim/70 hover:text-gold-dim hover:border-gold/50 transition-colors font-body">返回标题</button>
+    </div>
+  </div>
+</div>
+
+<!-- 成就列表弹窗 -->
+<div id="achievementModal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+  <div class="ink-border p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto">
+    <span class="corner-tr"></span>
+    <span class="corner-bl"></span>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-title text-xl text-gold">成就录</h3>
+      <button id="achClose" class="text-gold-dim hover:text-gold text-xl">×</button>
+    </div>
+    <div id="achievementList" class="space-y-2 text-sm font-body">
+      <!-- 动态生成 -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  仙逆·寻道 — 游戏数据与逻辑
+// ============================================================
+
+// ---------- 常量定义 ----------
+const REALMS = ['凡人', '凝气', '筑基', '结丹', '元婴', '化神', '婴变', '问鼎'];
+const CONCEPTS = {
+  life:     { name: '生死·生', color: 'hsl(140,50%,55%)', short: '生' },
+  death:    { name: '生死·死', color: 'hsl(220,50%,55%)', short: '死' },
+  samsara:  { name: '轮回',     color: 'hsl(280,55%,58%)', short: '轮' },
+  karma:    { name: '因果',     color: 'hsl(35,70%,55%)',  short: '因' },
+  time:     { name: '岁月',     color: 'hsl(200,60%,58%)', short: '岁' },
+  truth:    { name: '真假',     color: 'hsl(150,40%,50%)', short: '真' },
+  slaughter:{ name: '杀戮',     color: 'hsl(0,65%,50%)',   short: '杀' },
+};
+const CONCEPT_KEYS = Object.keys(CONCEPTS);
+
+// ---------- 物品定义 ----------
+const ITEMS = {
+  tianni_zhu:   { name: '天逆珠',   desc: '一颗灰扑扑的珠子，内含乾坤，可纳万物、逆生死' },
+  guyi_sword:   { name: '古遗剑',   desc: '一柄锈迹斑斑的铁剑，似有远古剑意蛰伏' },
+  danlu_pill:   { name: '丹炉丹',   desc: '一枚色泽温润的丹药，服之可增进修为' },
+  yuhuo_talisman:{name: '御火符',   desc: '一张泛黄的符箓，可引动天地之火' },
+  guyi_jade:    { name: '古神玉简', desc: '记载着古神传承的玉简，晦涩难懂' },
+  xueyu_pearl:  { name: '血玉珠',   desc: '殷红如血的珠子，散发着不祥的气息' },
+  qingxin_cao:  { name: '清仙草',   desc: '一株清香四溢的灵草，可宁神静气' },
+  poxu_jian:    { name: '破虚剑',   desc: '锋芒毕露的飞剑，可破万物' },
+  huiyin_stone: { name: '回音石',   desc: '能记录声音的奇异石头，前世记忆若隐若现' },
+  wuji_pill:    { name: '无极丹',   desc: '传说中的仙丹，服之可突破境界桎梏' },
+  dao_heart:    { name: '道心种',   desc: '一颗晶莹的种子，蕴含着对大道的感悟' },
+  mortal_bowl:  { name: '凡俗碗',   desc: '一只粗瓷碗，盛着人间烟火' },
+};
+
+// ---------- 成就定义 ----------
+const ACHIEVEMENTS = {
+  first_step:     { name: '初窥仙门',     desc: '踏上修仙之路',                  hint: '选择任何修仙之路' },
+  sect_disciple:  { name: '宗门弟子',     desc: '加入修仙宗门',                  hint: '选择加入宗门' },
+  rogue_cultivator:{name: '散修之路',     desc: '以散修身份修行',                hint: '选择散修之路' },
+  tianni_owner:   { name: '天逆之主',     desc: '获得天逆珠',                    hint: '在机缘中获得天逆珠' },
+  ancient_god:    { name: '古神传承',     desc: '获得古神传承',                  hint: '通过古神考验' },
+  pill_master:    { name: '丹道有成',     desc: '炼制出第一炉丹药',              hint: '学习炼丹之术' },
+  tribulation_survive:{name:'渡劫成功',   desc: '成功渡过天劫',                  hint: '在天劫中存活' },
+  tribulation_fall: { name: '天劫之下',   desc: '陨落在天劫之中',                hint: '死于天劫' },
+  dao_heart_strong:{ name: '道心坚定',    desc: '道心值达到80以上',              hint: '坚持本心，不为外物所动' },
+  dao_heart_weak: { name: '道心蒙尘',     desc: '道心值降至30以下',              hint: '在抉择中迷失本心' },
+  ending_ascend:  { name: '飞升成仙',     desc: '达成飞升结局',                  hint: '修行圆满，飞升仙界' },
+  ending_fall:    { name: '陨落道消',     desc: '达成陨落结局',                  hint: '在修仙途中陨落' },
+  ending_demon:   { name: '入魔沉沦',     desc: '达成入魔结局',                  hint: '堕入魔道' },
+  ending_recluse: { name: '归隐山林',     desc: '达成归隐结局',                  hint: '放弃仙途，归隐山林' },
+  ending_heritage:{ name: '传承道统',     desc: '达成传承结局',                  hint: '留下道统，传于后人' },
+  ending_huadao:  { name: '化道天地',     desc: '达成化道结局',                  hint: '身化大道，与天地同存' },
+  ending_samsara: { name: '轮回重生',     desc: '达成轮回结局',                  hint: '入轮回，再寻道' },
+  ending_lonely:  { name: '无敌寂寞',     desc: '达成无敌寂寞结局',              hint: '天下无敌，却只剩一人' },
+  all_items:      { name: '万宝缠身',     desc: '同时持有5件以上物品',           hint: '收集各种天材地宝' },
+  all_concepts:   { name: '万法皆通',     desc: '所有意境均达到30以上',          hint: '感悟多种大道意境' },
+  reincarnate_3:  { name: '三生三世',     desc: '进入第三世轮回',                hint: '重入轮回两次' },
+  kind_choice:    { name: '心存善念',     desc: '在关键时刻选择善良',            hint: '即使代价沉重，仍选择善' },
+  cruel_choice:   { name: '杀伐果断',     desc: '在关键时刻选择杀戮',            hint: '为达目的不择手段' },
+  secret_ending:  { name: '逆天改命',     desc: '达成隐藏结局',                  hint: '？？？' },
+  first_death:    { name: '初尝死亡',     desc: '第一次经历死亡',                hint: '在任何结局中陨落' },
+};
+
+// ---------- 剧情节点 ----------
+// 每个节点: { id, title, location, chapter, text, choices:[{text, desc, next, effects:{}}], effects:{}, onEnter:fn }
+const STORY = {
+  // ========== 序章 ==========
+  start: {
+    title: '风起青萍',
+    location: '朱雀星 · 边陲小镇',
+    chapter: '第一章 · 凡尘',
+    text: `朱雀星，东域边陲。
+
+一座名为"青牛镇"的小镇坐落于群山之间，炊烟袅袅，鸡犬相闻。你叫王林，是镇上王财主家的独子，年方十五，眉清目秀，却自幼体弱多病。
+
+这日黄昏，你正坐在自家门槛上发呆，望着天边那抹如血的残阳，心中莫名升起一股烦躁——仿佛有什么大事即将发生。
+
+忽然，镇口传来一阵喧哗。你站起身来，远远望见一道青色剑光从天而降，落在了镇中央的老槐树下。
+
+剑光散去，现出一个身着青袍的中年男子，他面容清癯，双目如电，周身似有仙气缭绕。
+
+"吾乃青云宗外门执事，今日路过此地，欲收几名有灵根的弟子入宗修行。"男子声音不大，却清晰地传遍了整个小镇。
+
+全镇哗然。修仙？那可是传说中的事情！
+
+你心跳加速，握紧了拳头。`,
+    choices: [
+      { text: '立刻前往老槐树，参加灵根测试', desc: '也许这是改变命运的机会', next: 'linggen_test', effects: { daoxin: 2 } },
+      { text: '先回家告诉父母，再做打算', desc: '家中独子，不可鲁莽行事', next: 'go_home', effects: { daoxin: 1 } },
+      { text: '远远观望，不急于出头', desc: '木秀于林，风必摧之', next: 'watch_far', effects: { daoxin: -1, concept: { truth: 2 } } },
+    ]
+  },
+
+  linggen_test: {
+    title: '灵根测试',
+    location: '青牛镇 · 老槐树下',
+    chapter: '第一章 · 凡尘',
+    text: `你挤过围观的人群，来到老槐树下。
+
+青袍男子面前摆着一块半透明的玉石，散发着淡淡光晕。已经有几个镇上的少年试过了，玉石都毫无反应，青袍男子微微摇头。
+
+"下一个。"
+
+你深吸一口气，走上前去，将手掌按在玉石上。
+
+片刻沉寂——
+
+忽然，玉石爆发出刺目的灰光！不是青色、不是红色、不是金色，而是一种灰蒙蒙的、仿佛什么都不是的颜色。
+
+青袍男子眉头紧锁，沉吟良久。
+
+"五灵根……不，这是……"他似乎有些不确定，"杂灵根，资质低劣，但也算有仙缘。你可愿入我青云宗，做一名外门弟子？"
+
+周围响起窃窃私语。五灵根，那是修仙界最差的资质，几乎不可能有所成就。
+
+你抬起头，看着青袍男子。`,
+    choices: [
+      { text: '弟子愿意！恳请仙师收录！', desc: '哪怕只有万分之一的机会，也要一试', next: 'join_sect', effects: { daoxin: 3, realm: 0.05, achievement: 'first_step' } },
+      { text: '我……我想再考虑一下', desc: '五灵根的资质，去了也是受辱', next: 'hesitate', effects: { daoxin: -2 } },
+    ]
+  },
+
+  go_home: {
+    title: '父母之命',
+    location: '青牛镇 · 王家',
+    chapter: '第一章 · 凡尘',
+    text: `你转身回家，将镇上发生的事情告诉了父母。
+
+父亲王财主沉默良久，抽着旱烟袋，烟锅里的火星明灭不定。母亲则在一旁抹眼泪。
+
+"林儿，修仙一途，凶险万分。"父亲终于开口，"你自幼体弱，又是家中独子……为父本想让你安安分分过日子，继承家业。"
+
+"可是爹，"你握紧拳头，"我不想一辈子困在这个小镇上。"
+
+父亲看着你，眼中闪过一丝复杂。"你爷爷……当年也是想修仙的，他走了，再也没回来。"
+
+屋子里一片沉默。
+
+最终，父亲叹了口气："你自己决定吧。是去是留，爹都不拦你。"`,
+    choices: [
+      { text: '我要去修仙！', desc: '男儿志在四方，岂能困于一隅', next: 'linggen_test', effects: { daoxin: 2, item: 'qingxin_cao' } },
+      { text: '我留下，侍奉二老', desc: '父母在，不远游', next: 'stay_home', effects: { daoxin: 5, concept: { karma: 3 } } },
+    ]
+  },
+
+  watch_far: {
+    title: '冷眼旁观',
+    location: '青牛镇 · 街角',
+    chapter: '第一章 · 凡尘',
+    text: `你靠在街角的一根柱子上，远远看着老槐树下的动静。
+
+几个少年上去测试，大多没有灵根，偶有一两个有灵根的，也都是三四灵根，青袍男子神色平淡。
+
+"修仙……"你喃喃自语。
+
+你从小就爱读那些志怪小说，对修仙之事心向往之。但你也知道，世上没有白吃的午餐。修仙者看似风光，背后的凶险又有谁知？
+
+正思索间，一个衣衫褴褛的老乞丐缓缓从你身边走过。他似乎不经意地看了你一眼，浑浊的眼睛里闪过一丝精光。
+
+"小友，命格奇特啊……"老乞丐低声说了一句，继续向前走去。
+
+你一愣，再看时，老乞丐已经消失在人群中。`,
+    choices: [
+      { text: '追上去，问问老乞丐的话是什么意思', desc: '这老乞丐绝非凡人', next: 'follow_beggar', effects: { concept: { truth: 5 } } },
+      { text: '当是胡言乱语，去参加灵根测试', desc: '修仙才是正道', next: 'linggen_test', effects: { daoxin: 1 } },
+      { text: '回家去，此事与我无关', desc: '多一事不如少一事', next: 'stay_home', effects: { daoxin: -1 } },
+    ]
+  },
+
+  follow_beggar: {
+    title: '神秘老者',
+    location: '青牛镇 · 破庙',
+    chapter: '第一章 · 凡尘',
+    text: `你追着老乞丐的身影，一路来到镇外的一座破庙前。
+
+老乞丐转过身，看着你，忽然笑了。
+
+"小友，你可知老夫是谁？"
+
+你摇头。
+
+"老夫是谁不重要，重要的是——"老乞丐从怀里摸出一颗灰扑扑的珠子，"你与这颗珠子有缘。"
+
+那珠子看起来毫不起眼，灰扑扑的，像是从路边随便捡的石头。但你看着它，心中却莫名升起一股熟悉感，仿佛它本就该属于你。
+
+"此珠名为'天逆'，今日便赠予你。"老乞丐将珠子塞到你手中，"记住，此珠的秘密，不可让任何人知晓。否则，杀身之祸。"
+
+你还没来得及说话，老乞丐的身影便渐渐模糊，化作一缕轻烟消散了。
+
+你怔怔地站在原地，手中握着那颗温热的珠子。`,
+    choices: [
+      { text: '仔细研究这颗珠子', desc: '这绝对是宝物', next: 'study_tianni', effects: { item: 'tianni_zhu', achievement: 'tianni_owner', concept: { samsara: 5 } } },
+      { text: '扔掉！这东西太邪门了', desc: '无事献殷勤，非奸即盗', next: 'throw_zhu', effects: { daoxin: -3, concept: { truth: 3 } } },
+    ]
+  },
+
+  study_tianni: {
+    title: '天逆珠',
+    location: '青牛镇 · 破庙',
+    chapter: '第一章 · 凡尘',
+    text: `你坐在破庙的蒲团上，将天逆珠放在手心仔细端详。
+
+珠子灰扑扑的，表面粗糙，看不出任何特别之处。但你越是盯着它看，越是觉得它深不可测——仿佛里面藏着一个宇宙。
+
+"天逆……逆天而行么？"你喃喃道。
+
+忽然，你感到指尖一痛，一滴鲜血被珠子吸了进去。
+
+嗡——
+
+珠子微微震动，你眼前一花，发现自己来到了一片灰蒙蒙的空间。空间不大，约莫方圆丈许，中央有一汪泉水，水面平静如镜。
+
+"这是……珠子里面？"你震惊不已。
+
+这便是传说中的储物空间？不，比储物空间更神奇——这里有泉水，有空气，仿佛一个真实的小世界。
+
+你用手指沾了一点泉水，一股清凉之意顺着指尖蔓延全身，原本有些虚弱的身体竟然觉得充满了力量。
+
+"此水……有疗伤增元之效！"`,
+    choices: [
+      { text: '大量饮用泉水，增强体质', desc: '天赐宝物，不用白不用', next: 'drink_water', effects: { realm: 0.1, daoxin: -1 } },
+      { text: '适可而止，细水长流', desc: '凡事过犹不及', next: 'moderate_water', effects: { realm: 0.05, daoxin: 3, concept: { karma: 2 } } },
+      { text: '离开珠子，先回家再说', desc: '此地不宜久留', next: 'leave_zhu', effects: { daoxin: 1, concept: { truth: 2 } } },
+    ]
+  },
+
+  drink_water: {
+    title: '贪念之祸',
+    location: '天逆珠内',
+    chapter: '第一章 · 凡尘',
+    text: `你趴在泉边，大口大口地喝着泉水。
+
+清凉的泉水流入腹中，化作一股股暖流，涌向四肢百骸。你感到身体越来越轻，仿佛要飘起来一般。
+
+然而，喝着喝着，你忽然感到一阵剧痛——体内仿佛有什么东西在膨胀、在撕裂！
+
+"啊！"你痛得倒在地上，浑身抽搐。
+
+泉水的力量太过庞大，以你凡人之躯，根本承受不住如此海量的灵气。你的经脉在灵气的冲击下寸寸断裂，又在泉水的修复下重新愈合……如此反复，痛不欲生。
+
+不知过了多久，痛苦终于消退。
+
+你浑身是汗地躺在地上，大口喘着气。虽然痛苦，但你能感觉到，自己的身体确实变强了许多。
+
+"好险……差点把自己撑爆了。"你心有余悸。
+
+经此一事，你明白了一个道理——宝物虽好，用之不慎，反受其害。`,
+    choices: [
+      { text: '离开珠子，回家', desc: '需要好好消化这次的收获', next: 'leave_zhu', effects: { realm: 0.15, concept: { death: 5, daoxin: 0 } } },
+    ]
+  },
+
+  moderate_water: {
+    title: '细水长流',
+    location: '天逆珠内',
+    chapter: '第一章 · 凡尘',
+    text: `你只是浅浅地尝了一口泉水，便停下了。
+
+清凉的感觉在体内蔓延，你能感觉到身体在缓缓变强，但并不猛烈，如同春雨润物，悄无声息。
+
+"饭要一口一口吃，路要一步一步走。"你对自己说。
+
+修仙一途，最忌急功近利。多少惊才绝艳之辈，就是因为急于求成，最终走火入魔，落得个身死道消的下场。
+
+你站起身，在这片小空间里四处查看。除了中央的泉水，四周都是灰蒙蒙的墙壁，摸上去坚硬如铁。墙壁上似乎刻着什么，但太模糊了，看不清楚。
+
+"看来这珠子还有很多秘密，需要慢慢发掘。"
+
+你心念一动，退出了珠子空间。`,
+    choices: [
+      { text: '回家，从长计议', desc: '有了这颗珠子，修仙之路便有了底气', next: 'leave_zhu', effects: { realm: 0.08, daoxin: 2 } },
+    ]
+  },
+
+  throw_zhu: {
+    title: '一念之差',
+    location: '青牛镇 · 破庙外',
+    chapter: '第一章 · 凡尘',
+    text: `你用力将珠子扔了出去。
+
+珠子在空中划过一道弧线，落入了路边的草丛里，消失不见。
+
+你拍拍手，转身就走。
+
+走了几步，你又停下了。
+
+"等等……那老乞丐神神秘秘的，不像是骗子。而且那颗珠子……我为什么会觉得熟悉？"
+
+你犹豫了。
+
+回去捡？还是不捡？
+
+如果那真是宝物，错过了岂不可惜？但如果是什么邪物，捡回来反受其害……
+
+天色渐暗，夕阳的最后一缕光芒消失在山的那头。`,
+    choices: [
+      { text: '回去把珠子捡回来', desc: '宁可信其有，不可信其无', next: 'retrieve_zhu', effects: { item: 'tianni_zhu', achievement: 'tianni_owner', daoxin: -1 } },
+      { text: '不捡了，回家', desc: '是福不是祸，是祸躲不过', next: 'go_home_no_zhu', effects: { daoxin: 2, concept: { truth: 5 } } },
+    ]
+  },
+
+  retrieve_zhu: {
+    title: '失而复得',
+    location: '青牛镇 · 路边草丛',
+    chapter: '第一章 · 凡尘',
+    text: `你回到扔珠子的地方，在草丛里摸索了半天，终于找到了那颗灰扑扑的珠子。
+
+珠子静静地躺在你的手心里，和之前一模一样，没有任何变化。
+
+"是我想多了吗？"你喃喃道。
+
+就在这时，珠子微微发热，一股微弱的意识传入你的脑海——只有两个字：
+
+"多谢。"
+
+你吓了一跳，差点把珠子再扔出去。
+
+"谁？谁在说话？"
+
+没有回应。珠子又恢复了冰冷的触感，仿佛刚才的一切都是你的幻觉。
+
+你盯着珠子看了很久，最终还是把它收进了怀里。
+
+"不管你是什么……既然跟着我，就跟着吧。"`,
+    choices: [
+      { text: '回家', desc: '天色已晚', next: 'leave_zhu', effects: { concept: { samsara: 3, karma: 2 } } },
+    ]
+  },
+
+  leave_zhu: {
+    title: '归途',
+    location: '青牛镇外',
+    chapter: '第一章 · 凡尘',
+    text: `你揣着天逆珠，往镇上走去。
+
+路过老槐树的时候，发现灵根测试已经结束了。青袍男子正准备离去，身边跟着两个少年——是镇上的张二狗和李铁柱，他们似乎被选中了。
+
+青袍男子看到你，目光在你身上停留了片刻，眉头微微一皱。
+
+"你身上……有灵气波动？"他疑惑地看着你，"你明明没有参加测试……"
+
+你心中一紧。`,
+    choices: [
+      { text: '仙师说笑了，我一个凡人哪来的灵气', desc: '装傻充愣，蒙混过关', next: 'bluff_sect', effects: { concept: { truth: 3 }, daoxin: -1 } },
+      { text: '仙师，我也想参加测试', desc: '趁机加入宗门', next: 'late_test', effects: { realm: 0.05 } },
+      { text: '转身就走', desc: '不与他纠缠', next: 'run_away', effects: { daoxin: -2, concept: { death: 2 } } },
+    ]
+  },
+
+  bluff_sect: {
+    title: '蒙混过关',
+    location: '青牛镇 · 老槐树下',
+    chapter: '第一章 · 凡尘',
+    text: `你故作茫然地看着青袍男子。
+
+"仙师，您说什么？我就是个普通的凡人，哪有什么灵气？"
+
+青袍男子盯着你看了好一会儿，似乎在判断你说的是真是假。最终，他摇了摇头。
+
+"许是老夫看错了。"他顿了顿，"你叫什么名字？可愿入我青云宗？"
+
+你一愣。
+
+"我……我可以吗？"
+
+"看你根骨尚可，虽然没有灵根……但做个杂役弟子还是可以的。"青袍男子淡淡道，"当然，杂役弟子没有功法传授，只是在宗内干些杂活，管吃管住。"
+
+杂役弟子？那和仆人有什么区别？
+
+但……至少能进入修仙宗门，能接触到修仙者。也许……能找到修仙的机会。`,
+    choices: [
+      { text: '我愿意！做杂役也愿意！', desc: '先进入宗门再说', next: 'sect_servant', effects: { daoxin: 2, realm: 0.02, achievement: 'sect_disciple' } },
+      { text: '算了，我还是不去了', desc: '宁为鸡首，不为牛后', next: 'rogue_start', effects: { daoxin: 3, achievement: 'rogue_cultivator' } },
+    ]
+  },
+
+  late_test: {
+    title: '迟来的测试',
+    location: '青牛镇 · 老槐树下',
+    chapter: '第一章 · 凡尘',
+    text: `"仙师，我也想参加测试。"你走上前说道。
+
+青袍男子看了你一眼，点了点头。"把手放上去吧。"
+
+你将手掌按在测灵石上。
+
+灰光亮起。
+
+青袍男子眉头紧锁。"五灵根……杂灵根，资质低劣。"他沉吟片刻，"不过，有总比没有好。你可愿入我青云宗，做一名外门弟子？"
+
+外门弟子。虽然地位不高，但至少是正式弟子，可以修炼功法。
+
+你心中狂喜，但面上不动声色。
+
+"弟子愿意！"
+
+"嗯。"青袍男子点头，"你叫什么名字？"
+
+"王林。"
+
+"王林……"青袍男子默念了一遍，"记住，从今日起，你便是青云宗外门弟子。修行之路，艰难险阻，好自为之。"
+
+你躬身行礼。
+
+从这一刻起，你的人生，彻底改变了。`,
+    choices: [
+      { text: '跟随仙师，前往青云宗', desc: '踏上修仙之路', next: 'arrive_sect', effects: { realm: 0.1, achievement: 'sect_disciple', achievement: 'first_step' } },
+    ]
+  },
+
+  run_away: {
+    title: '不欢而散',
+    location: '青牛镇外',
+    chapter: '第一章 · 凡尘',
+    text: `你不敢多留，转身就走。
+
+"站住！"青袍男子冷喝一声。
+
+你脚下不停，反而跑得更快了。
+
+"哼，不知好歹。"青袍男子冷哼一声，却并没有追上来——在他看来，你不过是个凡人，不值得他大动干戈。
+
+你一口气跑回了家，关上门，靠在门板上大口喘气。
+
+"好险……"
+
+你知道，自己刚才的行为已经得罪了那个青云宗的修士。以后如果再遇到青云宗的人，恐怕会有麻烦。
+
+但你不后悔。天逆珠的秘密，绝对不能让任何人知道。
+
+"既然不能加入宗门……那就自己修炼吧。"你握紧了拳头，"散修……就散修！"`,
+    choices: [
+      { text: '开始散修之路', desc: '没有宗门，一样可以修仙', next: 'rogue_start', effects: { daoxin: 5, achievement: 'rogue_cultivator', achievement: 'first_step', concept: { death: 3 } } },
+    ]
+  },
+
+  go_home_no_zhu: {
+    title: '凡心',
+    location: '青牛镇 · 王家',
+    chapter: '第一章 · 凡尘',
+    text: `你回到家中，父母正在等你吃饭。
+
+饭桌上，父亲问起镇上的事，你如实说了。
+
+"修仙……"父亲叹了口气，"那都是传说中的事情，离我们普通人太远了。林儿，你好好读书，将来考个功名，也算是光宗耀祖了。"
+
+你低头扒饭，没有说话。
+
+夜里，你躺在床上，翻来覆去睡不着。
+
+修仙……凡人……
+
+你想起了老乞丐，想起了那颗珠子，想起了自己扔掉它的那一刻。
+
+"我做的对吗？"你问自己。
+
+没有人回答。
+
+窗外，月光如水。`,
+    choices: [
+      { text: '算了，安心做个凡人也挺好', desc: '平平淡淡才是真', next: 'mortal_life', effects: { daoxin: 5 } },
+      { text: '不！我不甘心！', desc: '我要修仙！我要长生！', next: 'resolve_cultivate', effects: { daoxin: 3 } },
+    ]
+  },
+
+  mortal_life: {
+    title: '凡俗一生',
+    location: '青牛镇',
+    chapter: '终章 · 凡尘',
+    text: `你最终选择了留下。
+
+你读书、考学、娶妻、生子。父亲去世后，你继承了家业，成了镇上的新财主。
+
+日子一天天过去，你从少年变成青年，再变成中年、老年。
+
+偶尔，你会想起那个老乞丐，想起那颗珠子，想起自己曾经有过一个修仙的机会。
+
+"如果当年我选择了修仙，现在会是什么样子？"你常常这样问自己。
+
+但人生没有如果。
+
+你活到了八十岁，无疾而终。
+
+临死前，你看着围在床前的子孙们，脸上露出了微笑。
+
+这一生，虽然平淡，但也圆满。
+
+……
+
+恍惚间，你似乎看到了一颗灰扑扑的珠子，在黑暗中微微发光。
+
+"下一世……你还会选择这条路吗？"一个苍老的声音在你耳边响起。
+
+你想回答，却发不出声音。
+
+意识渐渐沉入黑暗。`,
+    choices: [
+      { text: '【结局】凡俗终老', desc: '平平淡淡，也是一种道', next: 'ending_recluse', effects: { ending: 'recluse' } },
+    ]
+  },
+
+  resolve_cultivate: {
+    title: '道心萌芽',
+    location: '青牛镇 · 王家',
+    chapter: '第一章 · 凡尘',
+    text: `你猛地从床上坐起来，满头大汗。
+
+"我不甘心！"你握紧拳头，指甲深深陷入掌心，"我王林，绝不甘心做一个凡人！"
+
+既然决定了修仙，那就得有计划。
+
+首先，你需要功法。没有功法，一切都是空谈。但功法是修仙门派的不传之秘，你一个凡人，从哪里弄功法？
+
+其次，你需要资源。灵石、丹药、法宝……这些都需要钱。你家虽然有些积蓄，但对于修仙来说，不过是杯水车薪。
+
+最后，你需要老师。没有人指点，光靠自己摸索，很容易走火入魔。
+
+"路要一步一步走。"你深吸一口气，"先想办法弄到功法。"
+
+你想起了镇上的书铺——那里有很多杂书，也许能找到一些关于修仙的记载。`,
+    choices: [
+      { text: '去书铺找书', desc: '也许能找到一些线索', next: 'bookshop', effects: { concept: { truth: 2 } } },
+      { text: '去山里碰碰运气', desc: '传说山中有隐士', next: 'mountain_hermit', effects: { daoxin: 2, concept: { death: 2 } } },
+    ]
+  },
+
+  // ========== 加入宗门线 ==========
+  join_sect: {
+    title: '拜入宗门',
+    location: '青云宗 · 山门',
+    chapter: '第二章 · 宗门',
+    text: `你跟随青袍男子，踏上了前往青云宗的路。
+
+青袍男子名叫李玄，是青云宗外门的一名执事。他带着你们三个新弟子，驾着一柄飞剑，腾空而起。
+
+这是你第一次飞行。脚下是连绵的群山和云海，耳边是呼啸的风声。你既兴奋又紧张，紧紧抓住飞剑的边缘。
+
+"坐稳了。"李玄淡淡道。
+
+飞剑速度极快，不过半日功夫，便来到了一座高耸入云的大山前。
+
+"那便是青云山，我青云宗的山门所在。"李玄指着前方。
+
+你抬头望去，只见山峰高耸入云，云雾缭绕间，隐约可见亭台楼阁，飞檐翘角，宛如仙境。
+
+"好壮观……"你喃喃道。
+
+"以后你就住在这里了。"李玄带着你们降落在山脚下的一个广场上，"外门弟子的居所在东山，我带你们去。"`,
+    choices: [
+      { text: '四处打量，熟悉环境', desc: '了解一下这个新地方', next: 'arrive_sect', effects: { concept: { truth: 2 } } },
+      { text: '询问李执事关于修炼的事', desc: '尽快开始修炼才是正事', next: 'ask_cultivation', effects: { daoxin: 2 } },
+    ]
+  },
+
+  arrive_sect: {
+    title: '初入青云',
+    location: '青云宗 · 外门',
+    chapter: '第二章 · 宗门',
+    text: `外门弟子的居所是一排排整齐的石屋，每个弟子一间。
+
+你的房间不大，只有一张床、一张桌子、一把椅子，简陋但干净。
+
+"这是你的身份令牌，还有入门功法《青云诀》第一层。"李玄递给你一块木牌和一本薄薄的册子，"外门弟子每月可领一块下品灵石、一瓶聚气散。修炼上有不懂的，可以去问传功长老。"
+
+你接过木牌和功法，心中激动。
+
+"多谢李执事！"
+
+"嗯。"李玄点头，"记住，外门弟子每月都有考核，考核不合格的，会被贬为杂役弟子。好好修炼，别偷懒。"
+
+说完，李玄便离开了。
+
+你关上门，迫不及待地翻开《青云诀》。
+
+册子上记载着入门的吐纳之法，以及如何感应天地灵气、如何将灵气引入体内。
+
+"终于……可以开始修炼了！"`,
+    choices: [
+      { text: '立刻开始修炼', desc: '争分夺秒', next: 'first_cultivation', effects: { realm: 0.15, daoxin: 1 } },
+      { text: '先出去转转，认识一下其他弟子', desc: '多交朋友，多条路', next: 'meet_disciples', effects: { concept: { karma: 2 }, daoxin: 1 } },
+    ]
+  },
+
+  sect_servant: {
+    title: '杂役弟子',
+    location: '青云宗 · 杂役院',
+    chapter: '第二章 · 宗门',
+    text: `你成了青云宗的一名杂役弟子。
+
+杂役弟子的日子很苦。每天天不亮就要起床，挑水、劈柴、扫地、做饭……一天下来，累得筋疲力尽，根本没有时间修炼。
+
+而且，杂役弟子地位低下，正式弟子们动辄打骂，你只能忍气吞声。
+
+"这样下去不是办法……"你一边挑水一边想，"必须想办法学到功法。"
+
+你注意到，负责藏经阁打扫的杂役弟子，有机会接触到功法典籍。虽然只是最基础的，但对于你来说已经足够了。
+
+但藏经阁的差事是个肥缺，很多人盯着，轮不到你这个新来的。
+
+"得想个办法……"`,
+    choices: [
+      { text: '巴结管事的，争取调到藏经阁', desc: '大丈夫能屈能伸', next: 'bribe_manager', effects: { daoxin: -2, concept: { truth: 3 } } },
+      { text: '偷偷观察外门弟子修炼，自己摸索', desc: '偷学也是学', next: 'steal_learn', effects: { realm: 0.08, concept: { truth: 5 }, daoxin: -1 } },
+      { text: '用天逆珠的泉水改善体质，等待机会', desc: '有宝物不用是傻子', next: 'use_tianni_sect', effects: { realm: 0.12, concept: { life: 3 } } },
+    ]
+  },
+
+  ask_cultivation: {
+    title: '问道',
+    location: '青云宗 · 山路上',
+    chapter: '第二章 · 宗门',
+    text: `"李执事，请问修炼一途，最重要的是什么？"你恭敬地问道。
+
+李玄看了你一眼，似乎有些意外。
+
+"你倒是个有心的。"他沉吟片刻，"修炼一途，资质、功法、资源、机缘……缺一不可。但最重要的，是道心。"
+
+"道心？"
+
+"不错。"李玄点头，"道心坚定之人，哪怕资质差些，也能走出一条路来。道心不坚之人，哪怕天资绝世，最终也不过是镜花水月。"
+
+他指了指远处的山峰。
+
+"你看那座山，很多人都想爬上去。但有的人爬了一半就累了，有的人被路边的风景吸引了，有的人被风雨吓退了……能真正爬到山顶的，永远是少数。"
+
+"修仙，就像爬山。"
+
+你若有所思。
+
+"弟子明白了。"`,
+    choices: [
+      { text: '多谢李执事指点', desc: '这番话让你受益匪浅', next: 'arrive_sect', effects: { daoxin: 5, concept: { karma: 2 } } },
+    ]
+  },
+
+  first_cultivation: {
+    title: '第一次修炼',
+    location: '青云宗 · 石屋',
+    chapter: '第二章 · 宗门',
+    text: `你盘膝坐在床上，按照《青云诀》上的方法，开始感应天地灵气。
+
+起初，什么都没有。你只觉得脑子里乱糟糟的，各种念头纷至沓来，根本静不下心。
+
+"不要急……"你对自己说，"慢慢来。"
+
+你闭上眼睛，调整呼吸，渐渐地，心平静了下来。
+
+不知道过了多久，你忽然"看到"了——
+
+空气中，漂浮着无数细小的光点，五颜六色，如同萤火虫一般。
+
+"这就是……天地灵气？"
+
+你心中一动，那些光点似乎受到了吸引，缓缓向你靠拢。你按照功法上的方法，尝试将它们引入体内。
+
+光点顺着你的呼吸进入体内，沿着经脉缓缓流动。你感到一股温暖的力量在身体里蔓延，舒服得差点呻吟出来。
+
+"这就是修炼的感觉吗……"
+
+然而，你很快发现，那些光点进入体内后，大部分都消散了，只有很少一部分被吸收。
+
+"五灵根……果然资质很差。"你苦笑，"别人吸收十分，我只能吸收一分。"
+
+但你没有气馁。
+
+"资质差又如何？我比别人多花十倍、百倍的时间就是了！"`,
+    choices: [
+      { text: '继续修炼，坚持不懈', desc: '勤能补拙', next: 'hard_cultivation', effects: { realm: 0.2, daoxin: 3 } },
+      { text: '想想有没有办法提高效率', desc: '光靠苦练不行，得想办法', next: 'think_method', effects: { concept: { truth: 3 } } },
+    ]
+  },
+
+  meet_disciples: {
+    title: '同门',
+    location: '青云宗 · 外门广场',
+    chapter: '第二章 · 宗门',
+    text: `你来到外门广场，这里有不少弟子在修炼。
+
+"喂，新来的？"一个身材高大的少年走了过来，上下打量着你，"我叫张虎，你叫什么？"
+
+"王林。"你拱手道。
+
+"王林？"张虎咧嘴一笑，"五灵根那个？哈哈，我就说嘛，今年的弟子里有个极品。"
+
+周围几个弟子哄笑起来。
+
+你面色不变。"张师兄有何指教？"
+
+"指教不敢当。"张虎拍了拍你的肩膀，"只是提醒你一句，在外门，实力为尊。像你这种五灵根的废物，最好老实点，别惹事，不然……"
+
+他没有说完，但威胁之意溢于言表。
+
+你心中冷笑，面上却不动声色。
+
+"多谢张师兄提醒。"`,
+    choices: [
+      { text: '忍气吞声，回去修炼', desc: '君子报仇，十年不晚', next: 'hard_cultivation', effects: { daoxin: 2, concept: { death: 2 } } },
+      { text: '反驳他，五灵根又如何', desc: '士可杀不可辱', next: 'confront_zhanghu', effects: { daoxin: 3, concept: { slaughter: 3 } } },
+      { text: '主动结交，化敌为友', desc: '多个朋友多条路', next: 'befriend_zhanghu', effects: { daoxin: -1, concept: { karma: 3 } } },
+    ]
+  },
+
+  hard_cultivation: {
+    title: '苦修',
+    location: '青云宗 · 后山',
+    chapter: '第二章 · 宗门',
+    text: `自此以后，你开始了苦修生涯。
+
+每天天不亮就起床修炼，直到深夜才歇息。别人修炼一个时辰，你就修炼三个时辰。别人休息的时候，你还在修炼。
+
+你把所有的时间都用在了修炼上，几乎不与任何人来往。
+
+日子一天天过去，你的修为在缓慢但稳定地提升着。
+
+凝气一层……凝气二层……凝气三层……
+
+虽然比别人慢，但你能感觉到自己在变强。
+
+这日，你正在后山修炼，忽然听到一阵打斗声。
+
+你循声走去，只见两个外门弟子正在交手。其中一个你认识，是张虎。另一个是个瘦高个的少年，你不认识。
+
+张虎明显占了上风，一拳将瘦高个打倒在地。
+
+"就凭你也敢跟我抢灵草？"张虎冷笑，"找死！"
+
+瘦高个躺在地上，嘴角溢血，眼中满是怨毒。`,
+    choices: [
+      { text: '出手相助，救下瘦高个', desc: '路见不平，拔刀相助', next: 'help_weak', effects: { daoxin: 3, concept: { life: 5 }, item: 'qingxin_cao', achievement: 'kind_choice' } },
+      { text: '趁火打劫，把两人都抢了', desc: '鹬蚌相争，渔翁得利', next: 'rob_both', effects: { daoxin: -5, concept: { slaughter: 5 }, item: 'yuhuo_talisman' } },
+      { text: '默默离开，不掺和', desc: '多一事不如少一事', next: 'walk_away', effects: { daoxin: -1, concept: { truth: 2 } } },
+    ]
+  },
+
+  help_weak: {
+    title: '路见不平',
+    location: '青云宗 · 后山',
+    chapter: '第二章 · 宗门',
+    text: `"住手！"你大喝一声，走了出去。
+
+张虎转过头，看到是你，嗤笑一声。
+
+"我当是谁，原来是你这个五灵根的废物。怎么，想多管闲事？"
+
+"张师兄，得饶人处且饶人。"你沉声道，"大家都是同门，何必赶尽杀绝？"
+
+"同门？"张虎哈哈大笑，"在修仙界，弱者不配当我的同门！"
+
+他猛地一拳向你打来！
+
+你早有防备，侧身躲开，同时一掌拍向他的胸口。你修炼刻苦，虽然资质差，但基础扎实。张虎没想到你竟然能躲开，猝不及防之下，被你一掌拍退了两步。
+
+"你找死！"张虎大怒，使出了全力。
+
+你们打了十几个回合，你渐渐落入下风——毕竟张虎的修为比你高了一层。但你咬着牙，死死支撑。
+
+就在这时，一道身影闪了过来，一掌将张虎拍飞。
+
+"够了！"一个冷厉的声音响起。
+
+你抬头一看，是个身穿白衣的青年，面容冷峻，气质不凡。
+
+"外门私斗，成何体统？"白衣青年冷冷道，"张虎，罚你面壁三月。你们两个，各罚一月俸禄。"
+
+张虎恨恨地看了你一眼，不敢反驳，灰溜溜地走了。
+
+白衣青年看了你一眼，转身离去。
+
+"多谢……"你看向那个瘦高个。
+
+"我叫林峰。"瘦高个站起身，擦了擦嘴角的血，"今日之恩，我记下了。"`,
+    choices: [
+      { text: '与林峰结交', desc: '此人可交', next: 'make_friend', effects: { concept: { karma: 5 }, daoxin: 2 } },
+      { text: '举手之劳，不必挂齿', desc: '继续修炼', next: 'continue_cultivate', effects: { daoxin: 1, realm: 0.1 } },
+    ]
+  },
+
+  make_friend: {
+    title: '兄弟',
+    location: '青云宗 · 后山',
+    chapter: '第二章 · 宗门',
+    text: `你和林峰坐在一块石头上，聊了起来。
+
+林峰是三灵根资质，比你强不少，但在外门也不算顶尖。他性格孤僻，没什么朋友，今天是因为一株灵草和张虎起了冲突。
+
+"王林，你是五灵根，修为竟然也能提升这么快？"林峰有些惊讶，"我还以为五灵根本就不可能修炼……"
+
+"勤能补拙罢了。"你笑了笑。
+
+"你不简单。"林峰认真地看着你，"我有种预感，你将来的成就，绝对不止于此。"
+
+你哈哈大笑。"借你吉言。"
+
+从那以后，你和林峰成了朋友。你们经常一起修炼，互相切磋，进步都很快。
+
+有个朋友的感觉……还不错。
+
+然而，你也知道，在修仙界，友谊是脆弱的。在利益面前，再好的朋友也可能反目成仇。
+
+但至少现在，你们是朋友。`,
+    choices: [
+      { text: '继续修炼，准备外门大比', desc: '外门大比是个机会', next: 'sect_competition', effects: { realm: 0.2, concept: { karma: 3 } } },
+    ]
+  },
+
+  rob_both: {
+    title: '渔翁之利',
+    location: '青云宗 · 后山',
+    chapter: '第二章 · 宗门',
+    text: `你躲在树后，等他们两败俱伤。
+
+张虎虽然赢了，但也消耗不小，气息有些紊乱。瘦高个更是重伤倒地，失去了战斗力。
+
+就是现在！
+
+你猛地冲了出去，一掌拍在张虎的后背上！
+
+"噗——"张虎喷出一口鲜血，难以置信地转过头，"是你！你这个废物敢偷袭我？"
+
+"废物？"你冷笑，一拳砸在他脸上，"现在谁是废物？"
+
+张虎又惊又怒，但他伤势不轻，根本不是你的对手。你几下就把他打晕了过去。
+
+然后你走到瘦高个面前。
+
+"你……你想干什么？"瘦高个惊恐地看着你。
+
+"把你的东西交出来。"你淡淡道。
+
+瘦高个咬着牙，最终还是把身上的东西都交了出来——几块灵石、一张符箓、还有几株灵草。
+
+你搜了张虎的身，也找到了不少好东西。
+
+"这就是修仙界啊……"你看着手中的战利品，心中没有愧疚，只有一种冰冷的快意。
+
+弱肉强食，适者生存。
+
+你记住了这个道理。`,
+    choices: [
+      { text: '赶紧离开，别被人发现了', desc: '做贼心虚', next: 'escape_mountain', effects: { daoxin: -5, concept: { slaughter: 8 }, item: 'yuhuo_talisman', realm: 0.15 } },
+    ]
+  },
+
+  walk_away: {
+    title: '旁观者',
+    location: '青云宗 · 后山',
+    chapter: '第二章 · 宗门',
+    text: `你默默地转身离开。
+
+事不关己，高高挂起。
+
+在修仙界，多管闲事往往没有好下场。你不想惹麻烦，也不想被卷入是非之中。
+
+你回到自己的石屋，继续修炼。
+
+但不知为什么，你总是静不下心来。
+
+那个瘦高个少年怨毒的眼神，一直在你脑海中挥之不去。还有张虎那张嚣张的脸……
+
+"我做错了吗？"你问自己。
+
+没有人回答。
+
+你叹了口气，闭上眼睛，继续修炼。
+
+也许，你没有做错。但你的道心，似乎蒙上了一层尘埃。`,
+    choices: [
+      { text: '不去想了，专心修炼', desc: '大道无情', next: 'continue_cultivate', effects: { daoxin: -2, concept: { death: 3 } } },
+    ]
+  },
+
+  continue_cultivate: {
+    title: '岁月如梭',
+    location: '青云宗',
+    chapter: '第二章 · 宗门',
+    text: `时光飞逝，三年过去了。
+
+你的修为已经达到了凝气九层，距离筑基只有一步之遥。但这一步，却难如登天。
+
+外门弟子中，凝气九层的有不少，但真正能筑基成功的，十不存一。
+
+筑基需要筑基丹，而筑基丹是稀缺资源，只有宗门大比的前十名才有资格获得。
+
+"外门大比……"你站在窗前，望着远处的山峰，"这是我唯一的机会。"
+
+以你的资质，如果没有筑基丹，想要靠自己筑基，几乎不可能。
+
+就在这时，门外传来了敲门声。
+
+"王林，在吗？"是林峰的声音。
+
+你打开门。"怎么了？"
+
+"外门大比的日子定了，三个月后。"林峰神色凝重，"张虎也在准备，他已经是凝气九层巅峰了，据说很有希望筑基。"
+
+你眼神微凝。
+
+张虎……这三年来，他处处针对你，给你制造了不少麻烦。如果让他筑基成功，以后你在宗门的日子会更不好过。
+
+"我知道了。"你点头，"我会准备的。"`,
+    choices: [
+      { text: '闭关修炼，全力冲击筑基', desc: '三个月，够了', next: 'sect_competition', effects: { realm: 0.15, daoxin: 2 } },
+      { text: '想办法弄到更多资源', desc: '没有资源，再努力也没用', next: 'seek_resources', effects: { concept: { truth: 3 } } },
+    ]
+  },
+
+  sect_competition: {
+    title: '外门大比',
+    location: '青云宗 · 比武台',
+    chapter: '第二章 · 宗门',
+    text: `三个月后，外门大比如期举行。
+
+比武台上，弟子们各展神通，打得天昏地暗。你一路过关斩将，竟然打进了前十名。
+
+这让所有人都大吃一惊——谁也没想到，你这个五灵根的废物，竟然能走到这一步。
+
+"下一场，王林对张虎！"
+
+听到这个名字，你眼神一凝。
+
+张虎走上台，冷冷地看着你。
+
+"王林，没想到你能走到这里。"他的声音冰冷，"但你的运气，到此为止了。"
+
+"是不是运气，打过才知道。"你淡淡道。
+
+"哼，不知死活。"
+
+战斗一触即发！
+
+张虎的修为比你高，而且他是三灵根，灵力比你浑厚得多。但你胜在基础扎实，战斗经验丰富。
+
+你们打得难解难分，台下弟子们看得目不转睛。
+
+"这个王林……不简单啊。"
+
+"五灵根能有这等实力，确实难得。"
+
+战斗进入白热化。你知道，这样拖下去对你不利，必须速战速决。`,
+    choices: [
+      { text: '使出全力，正面硬刚', desc: '我就不信赢不了他', next: 'fight_zhanghu_hard', effects: { daoxin: 3, concept: { slaughter: 5 } } },
+      { text: '用计谋，出其不意', desc: '硬碰硬不是明智之举', next: 'fight_zhanghu_trick', effects: { concept: { truth: 5 }, daoxin: 1 } },
+      { text: '主动认输，保存实力', desc: '筑基丹不止一颗，没必要拼命', next: 'surrender_fight', effects: { daoxin: 2, concept: { karma: 2 } } },
+    ]
+  },
+
+  fight_zhanghu_hard: {
+    title: '硬碰硬',
+    location: '青云宗 · 比武台',
+    chapter: '第二章 · 宗门',
+    text: `"喝！"你大喝一声，将全身灵力凝聚于拳头上，向张虎轰去。
+
+"来得好！"张虎不闪不避，同样一拳迎了上来。
+
+轰——
+
+两拳相撞，发出一声闷响。
+
+你只觉得手臂发麻，气血翻涌，后退了三步。张虎也后退了两步，脸上闪过一丝惊讶。
+
+"没想到你这废物还有点力气。"他冷笑道，"但仅此而已！"
+
+他猛地冲了上来，拳影重重，如同狂风暴雨一般向你袭来。
+
+你咬牙抵挡，节节败退。
+
+"不行……这样下去我必输无疑。"你心中焦急。
+
+就在这时，你脑海中忽然闪过一个念头——天逆珠！
+
+你可以用天逆珠的泉水瞬间恢复灵力，打他个措手不及。但这样一来，天逆珠的秘密就有可能暴露……
+
+怎么办？`,
+    choices: [
+      { text: '使用天逆珠，赢得比赛', desc: '为了筑基丹，值得冒险', next: 'use_tianni_fight', effects: { realm: 0.3, item: 'danlu_pill', concept: { truth: -3, daoxin: 0 } } },
+      { text: '不用，靠自己的力量赢', desc: '我王林，赢要赢得光明正大', next: 'win_by_self', effects: { daoxin: 5, concept: { karma: 5 }, realm: 0.2 } },
+    ]
+  },
+
+  fight_zhanghu_trick: {
+    title: '出其不意',
+    location: '青云宗 · 比武台',
+    chapter: '第二章 · 宗门',
+    text: `你假装不敌，节节败退。
+
+张虎见状，更加得意，攻势也越来越猛。
+
+"怎么了？刚才不是很狂吗？继续啊！"他哈哈大笑。
+
+你心中冷笑。
+
+就是现在！
+
+你猛地一个转身，避开他的拳头，同时一脚踢向他的膝盖后侧。这一脚又快又狠，而且角度刁钻，完全出乎张虎的意料。
+
+"咔嚓——"
+
+"啊！"张虎惨叫一声，跪倒在地。
+
+你没有停手，一掌拍在他的后背上，将他打飞出去。
+
+张虎重重地摔在台下，半天爬不起来。
+
+"胜者，王林！"裁判宣布道。
+
+台下一片寂静，然后爆发出雷鸣般的掌声。
+
+你站在比武台上，微微喘息。
+
+赢了。
+
+但你也知道，你用的手段不太光彩。虽然赢了比赛，但……
+
+"成王败寇，过程不重要，结果才重要。"你对自己说。
+
+但你的道心，似乎又有了一丝微妙的变化。`,
+    choices: [
+      { text: '领取奖励，准备筑基', desc: '筑基丹到手了', next: 'foundation_attempt', effects: { realm: 0.25, item: 'danlu_pill', daoxin: -2 } },
+    ]
+  },
+
+  use_tianni_fight: {
+    title: '天逆之威',
+    location: '青云宗 · 比武台',
+    chapter: '第二章 · 宗门',
+    text: `你暗中催动天逆珠，一股清凉的泉水流入体内，原本枯竭的灵力瞬间恢复，甚至比之前更加充沛！
+
+"什么？！"张虎感受到你身上突然暴涨的气息，脸色大变，"你怎么可能……"
+
+"死！"你一拳轰出，灵力澎湃，势不可挡。
+
+轰——
+
+张虎根本抵挡不住，被你一拳打飞，重重地摔在台下，口吐鲜血，昏死过去。
+
+台下一片死寂。
+
+所有人都惊呆了。
+
+"这……这是凝气九层的实力？"
+
+"他刚才明明已经快不行了……怎么突然……"
+
+裁判也愣了好一会儿才反应过来。
+
+"胜者……王林！"
+
+你走下台，表面平静，心中却在打鼓。
+
+刚才那一下，是不是太显眼了？会不会有人怀疑？
+
+你环顾四周，发现不少弟子都用异样的眼光看着你。甚至有几个长老，也在暗中打量你。
+
+"麻烦了……"你心中暗道。
+
+匹夫无罪，怀璧其罪。如果天逆珠的秘密暴露了，你将死无葬身之地。`,
+    choices: [
+      { text: '赶紧离开，躲起来再说', desc: '此地不宜久留', next: 'escape_sect', effects: { daoxin: -3, concept: { death: 5 } } },
+      { text: '装作什么都没发生，继续比赛', desc: '也许没人发现', next: 'continue_competition', effects: { daoxin: -2, concept: { truth: 3 } } },
+    ]
+  },
+
+  win_by_self: {
+    title: '光明正大',
+    location: '青云宗 · 比武台',
+    chapter: '第二章 · 宗门',
+    text: `你咬紧牙关，硬生生扛住了张虎的攻势。
+
+"我王林，就算输，也要输得光明正大！"
+
+你将全身灵力凝聚于一点，使出了《青云诀》中最强的一招——青云掌！
+
+一道青色的掌印从你手中飞出，向张虎轰去。
+
+"什么？！"张虎大惊，他没想到你竟然能使出这一招，"不可能！你一个五灵根，怎么可能将青云诀修炼到这种地步？"
+
+他仓促间抬手抵挡。
+
+轰——
+
+掌印与拳头相撞，发出一声巨响。
+
+张虎被震得后退了五六步，脸色苍白。而你，也不好受，体内灵力几乎耗尽。
+
+但你没有倒下。
+
+你一步一步向张虎走去。
+
+"你……你别过来！"张虎眼中闪过一丝恐惧。
+
+"认输吧。"你淡淡道。
+
+张虎咬着牙，死死地盯着你。最终，他低下了头。
+
+"我……认输。"
+
+台下爆发出雷鸣般的掌声。
+
+你赢了。赢得光明正大。
+
+那一刻，你心中涌起一股豪情。
+
+五灵根又如何？废物又如何？
+
+我王林，靠自己的双手，一样能走出一条路来！`,
+    choices: [
+      { text: '领取筑基丹，准备筑基', desc: '这是你应得的', next: 'foundation_attempt', effects: { realm: 0.3, item: 'danlu_pill', daoxin: 5, concept: { karma: 5 } } },
+    ]
+  },
+
+  surrender_fight: {
+    title: '退一步',
+    location: '青云宗 · 比武台',
+    chapter: '第二章 · 宗门',
+    text: `"我认输。"你淡淡道。
+
+台下一片哗然。
+
+"什么？他认输了？"
+
+"为什么啊？明明打得难解难分……"
+
+张虎也愣住了，他没想到你会主动认输。
+
+"你……"
+
+"筑基丹不止一颗，前十都有份。"你平静地说，"没必要拼个你死我活。"
+
+说完，你转身走下台。
+
+张虎站在台上，脸色一阵青一阵白。虽然赢了，但他觉得自己输了。
+
+你走下台，林峰迎了上来。
+
+"你疯了？为什么认输？"
+
+"我有我的考虑。"你笑了笑，"而且，我不想树敌太多。"
+
+林峰看了你很久，最终叹了口气。
+
+"你这个人……真看不透。"
+
+你笑而不语。
+
+有时候，退一步，不是懦弱，而是智慧。`,
+    choices: [
+      { text: '领取筑基丹，准备筑基', desc: '虽然不是第一，但筑基丹到手了', next: 'foundation_attempt', effects: { realm: 0.2, item: 'danlu_pill', daoxin: 3, concept: { karma: 3 } } },
+    ]
+  },
+
+  foundation_attempt: {
+    title: '筑基',
+    location: '青云宗 · 闭关室',
+    chapter: '第三章 · 筑基',
+    text: `你来到闭关室，布下禁制，开始准备筑基。
+
+筑基，是修仙路上的第一道大坎。迈过去，便是真正的修仙者，寿元大增。迈不过去，轻则修为倒退，重则身死道消。
+
+你盘膝坐下，取出筑基丹，放入口中。
+
+丹药入口即化，化作一股磅礴的药力，涌向四肢百骸。你运转功法，引导着药力冲击筑基瓶颈。
+
+轰——
+
+你感到体内仿佛有什么东西在破碎，又有什么东西在新生。
+
+痛苦，难以言喻的痛苦。经脉仿佛要被撑爆一般，浑身骨头都在咯咯作响。
+
+但你咬紧牙关，死死支撑。
+
+"我不能失败！"
+
+"我王林，绝不甘心做一个废物！"
+
+你一遍又一遍地冲击着瓶颈。一次、两次、三次……
+
+不知道过了多久，终于——
+
+咔嚓！
+
+仿佛有什么东西碎了。
+
+一股强大的力量从体内涌出，你感到自己的身体在发生着脱胎换骨的变化。灵力变得更加浑厚，神识变得更加清明。
+
+筑基……成功了！
+
+你睁开眼睛，两道精光从眼底闪过。
+
+从今天起，你不再是一个凡人。
+
+你是一名真正的修仙者！`,
+    choices: [
+      { text: '出关，迎接新的开始', desc: '筑基之后，海阔天空', next: 'foundation_success', effects: { realm: 1, daoxin: 3, concept: { life: 5 } } },
+    ]
+  },
+
+  foundation_success: {
+    title: '筑基之后',
+    location: '青云宗',
+    chapter: '第三章 · 筑基',
+    text: `筑基成功后，你从外门弟子晋升为内门弟子，地位水涨船高。
+
+你分到了更好的洞府，更多的资源。以前那些看不起你的人，现在见了你都客客气气的。
+
+张虎更是远远看到你就躲开，生怕你找他麻烦。
+
+"这就是实力带来的变化啊……"你心中感慨。
+
+这日，宗主召见了你。
+
+"王林，你以五灵根之姿筑基成功，实属不易。"宗主坐在高位上，缓缓道，"你可愿拜入老夫门下，做老夫的亲传弟子？"
+
+你心中一震。
+
+宗主亲传弟子？这可是天大的机缘！
+
+但你注意到，宗主旁边站着的几个长老，脸色都不太好看。显然，收你为亲传弟子，在宗门高层中有不少争议。
+
+而且……你总觉得宗主看你的眼神，有些奇怪。不像是看弟子的眼神，倒像是在看……一件物品。`,
+    choices: [
+      { text: '弟子愿意！多谢师尊！', desc: '这可是千载难逢的机会', next: 'become_disciple', effects: { realm: 0.2, daoxin: -2, concept: { truth: -2 } } },
+      { text: '弟子资质愚钝，恐辱没师尊', desc: '婉拒，事出反常必有妖', next: 'refuse_master', effects: { daoxin: 3, concept: { truth: 5 } } },
+    ]
+  },
+
+  become_disciple: {
+    title: '亲传弟子',
+    location: '青云宗 · 主峰',
+    chapter: '第三章 · 筑基',
+    text: `你成了宗主的亲传弟子。
+
+一时间，你成了整个青云宗的焦点。所有人都在议论你——一个五灵根的废物，竟然成了宗主的亲传弟子，真是走了狗屎运。
+
+只有你自己知道，事情没那么简单。
+
+宗主对你很好，给了你很多资源，很多功法。但你总觉得，他看你的眼神里，藏着什么。
+
+这日，宗主把你叫到他的密室。
+
+"林儿，你可知为师为什么收你为徒？"宗主背对着你，缓缓道。
+
+"弟子不知。"
+
+"因为你身上……有一样东西。"宗主转过身，紧紧地盯着你，"一样很重要的东西。"
+
+你心中一紧。
+
+"师尊说笑了，弟子身上能有什么东西……"
+
+"天逆珠。"宗主一字一顿地说，"把它交出来吧。"
+
+你的心沉了下去。
+
+他果然知道！
+
+"师尊，什么天逆珠？弟子听不懂……"你还想装傻。
+
+"听不懂？"宗主冷笑，"你以为你在比武台上突然恢复灵力，没人看得出来吗？老夫观察你很久了。"
+
+他一步步向你走来。
+
+"交出来，我可以饶你不死。否则……"`,
+    choices: [
+      { text: '交出天逆珠，保命要紧', desc: '留得青山在，不怕没柴烧', next: 'give_zhu', effects: { item_remove: 'tianni_zhu', daoxin: -5, concept: { death: 5 } } },
+      { text: '宁死不交！', desc: '天逆珠是我的，谁也别想抢走', next: 'refuse_zhu', effects: { daoxin: 5, concept: { slaughter: 5, death: 5 } } },
+    ]
+  },
+
+  give_zhu: {
+    title: '失宝',
+    location: '青云宗 · 密室',
+    chapter: '第三章 · 筑基',
+    text: `你颤抖着手，将天逆珠拿了出来。
+
+"师尊……珠子给你，求你放过我……"
+
+宗主一把夺过珠子，眼中闪过贪婪之色。
+
+"算你识相。"他把玩着珠子，"不过，你知道了这么多，你觉得我会放过你吗？"
+
+你脸色大变。
+
+"你……你言而无信！"
+
+"言而无信？"宗主哈哈大笑，"小子，你还是太嫩了。在修仙界，对敌人仁慈，就是对自己残忍。"
+
+他抬起手，一掌向你拍来。
+
+你闭上眼睛，心中充满了悔恨。
+
+为什么……为什么我要交出珠子？
+
+为什么我这么懦弱？
+
+就在这千钧一发之际，一道身影突然冲了进来，挡在你面前。
+
+"师尊，不要！"
+
+是林峰！
+
+"林峰？你怎么会在这里？"你愣住了。
+
+"我……我一直觉得宗主对你不怀好意，所以偷偷跟着……"林峰转过头，对你笑了笑，"王林，你快跑……"
+
+话音未落，宗主的手掌已经印在了林峰的胸口。
+
+"不——！"你嘶吼道。
+
+林峰的身体软软地倒下，他看着你，嘴角带着血，却还在笑。
+
+"快跑……"`,
+    choices: [
+      { text: '带着林峰的尸体逃走', desc: '我不能让他白死', next: 'escape_sect_2', effects: { daoxin: -10, concept: { death: 10, karma: 10, slaughter: 5 }, realm: 0.1 } },
+    ]
+  },
+
+  refuse_zhu: {
+    title: '宁为玉碎',
+    location: '青云宗 · 密室',
+    chapter: '第三章 · 筑基',
+    text: `"想要珠子？"你冷笑，"那就看你有没有命拿了！"
+
+你猛地催动天逆珠，一股强大的吸力从珠子中传出。
+
+"什么？！"宗主脸色大变，"这珠子竟然认主了？"
+
+天逆珠发出耀眼的灰光，整个密室都在震动。宗主被那股吸力拉扯，竟然有些站不稳。
+
+但你也不好受——催动天逆珠消耗了你大量的灵力，你感到一阵眩晕。
+
+"小子，你找死！"宗主大怒，强顶着吸力，一掌向你拍来。
+
+你知道，你挡不住这一掌。
+
+但你不后悔。
+
+"就算死，我也不会把珠子给你！"
+
+就在这危急关头，天逆珠突然爆发出更加强烈的光芒，将你整个人都包裹了进去。
+
+宗主的手掌拍在光罩上，竟然被弹了回去！
+
+"这是……"宗主又惊又怒。
+
+光芒越来越亮，你感到自己的身体在变得轻盈，仿佛要被拉入另一个空间。
+
+"小子，你跑不了的！"宗主怒吼着，疯狂地攻击光罩。
+
+但光罩纹丝不动。
+
+你的意识渐渐模糊。
+
+在失去意识之前，你似乎听到了一个苍老的声音——
+
+"终于……等到你了……"`,
+    choices: [
+      { text: '失去意识……', desc: '不知道会被传送到哪里', next: 'teleport_away', effects: { daoxin: 5, concept: { samsara: 10, death: 5 }, realm: 0.2 } },
+    ]
+  },
+
+  refuse_master: {
+    title: '婉拒',
+    location: '青云宗 · 大殿',
+    chapter: '第三章 · 筑基',
+    text: `"师尊厚爱，弟子感激不尽。"你躬身行礼，"但弟子资质愚钝，恐辱没师尊威名。还请师尊收回成命。"
+
+大殿内一片死寂。
+
+所有人都惊呆了。
+
+宗主收徒，竟然有人拒绝？
+
+宗主的脸色也沉了下来。
+
+"你确定？"
+
+"弟子确定。"你低着头，声音平静。
+
+"好，好得很。"宗主冷笑一声，"既然你不愿意，那就算了。退下吧。"
+
+你躬身告退。
+
+走出大殿，你才发现自己后背已经被冷汗浸湿了。
+
+"好险……"你喃喃道。
+
+你不知道宗主为什么要收你为徒，但你直觉感到危险。你的直觉，一向很准。
+
+从那以后，宗主再也没有找过你。但你能感觉到，有一双眼睛，一直在暗中盯着你。
+
+"青云宗……不能久留了。"你心中暗道。`,
+    choices: [
+      { text: '找个机会，离开青云宗', desc: '此地不宜久留', next: 'leave_sect', effects: { daoxin: 2, concept: { truth: 5, death: 3 } } },
+      { text: '继续留下，小心行事', desc: '最危险的地方最安全', next: 'stay_sect_careful', effects: { daoxin: 3, concept: { truth: 3 } } },
+    ]
+  },
+
+  // ========== 散修线 ==========
+  rogue_start: {
+    title: '散修之路',
+    location: '青牛镇外',
+    chapter: '第二章 · 散修',
+    text: `你决定走散修之路。
+
+没有宗门，没有功法，没有资源。一切都要靠自己。
+
+但你有天逆珠。
+
+这是你最大的依仗。
+
+你回到家，跟父母告别。父亲沉默良久，最终只是叹了口气。
+
+"去吧。自己选的路，跪着也要走完。"
+
+母亲哭着给你收拾了行李，塞了很多银子在你包里。
+
+"林儿，在外面要照顾好自己……"
+
+你强忍着泪水，磕了三个头，转身离去。
+
+你不知道的是，这一走，便是永别。
+
+……
+
+你离开了青牛镇，向着东方走去。据说东方有一座修仙坊市，散修们都在那里交易。
+
+路上，你一边走一边修炼。有天逆珠的泉水辅助，你的修为提升得很快。
+
+一个月后，你成功突破到了凝气一层。
+
+"这就是……修仙的感觉吗？"你感受着体内流动的灵力，心中激动。
+
+然而，你很快就遇到了第一个麻烦——
+
+一伙山贼拦住了你的去路。`,
+    choices: [
+      { text: '出手教训他们', desc: '我现在是修仙者，还怕几个山贼？', next: 'fight_bandits', effects: { concept: { slaughter: 3 }, daoxin: -1 } },
+      { text: '绕路走，不跟他们纠缠', desc: '多一事不如少一事', next: 'avoid_bandits', effects: { daoxin: 1, concept: { truth: 2 } } },
+      { text: '用计骗过他们', desc: '能不动手就不动手', next: 'trick_bandits', effects: { concept: { truth: 5 }, daoxin: 1 } },
+    ]
+  },
+
+  fight_bandits: {
+    title: '初试身手',
+    location: '荒野',
+    chapter: '第二章 · 散修',
+    text: `"此山是我开，此树是我栽！"山贼头目挥舞着大刀，"要想从此过，留下买路财！"
+
+你冷笑一声。
+
+"就凭你们？"
+
+你催动灵力，一拳向山贼头目打去。你现在是凝气一层的修士，对付几个凡人山贼，还不是手到擒来？
+
+然而，就在你的拳头即将击中山贼头目的时候，他突然侧身躲开，同时一刀向你砍来！
+
+"什么？！"你大惊失色。
+
+这个山贼头目，竟然也是个修士！
+
+"嘿嘿，小子，没想到吧？"山贼头目阴笑，"老子也是凝气三层的散修！"
+
+你心中一沉。
+
+大意了！
+
+你们打了起来。对方修为比你高，战斗经验也比你丰富。你节节败退，险象环生。
+
+"小子，把你身上的东西都交出来，老子可以饶你一命。"山贼头目狞笑道。
+
+你咬着牙，心中急速思索对策。`,
+    choices: [
+      { text: '使用天逆珠，出其不意', desc: '这是唯一的机会', next: 'use_tianni_bandit', effects: { concept: { slaughter: 5 }, daoxin: -2 } },
+      { text: '假装投降，伺机逃跑', desc: '打不过就跑，不丢人', next: 'pretend_surrender', effects: { daoxin: -1, concept: { truth: 3 } } },
+      { text: '死战到底', desc: '我王林，宁死不降！', next: 'fight_to_death', effects: { daoxin: 5, concept: { death: 5, slaughter: 5 } } },
+    ]
+  },
+
+  use_tianni_bandit: {
+    title: '反杀',
+    location: '荒野',
+    chapter: '第二章 · 散修',
+    text: `你假装不敌，节节败退。
+
+山贼头目以为你真的不行了，得意洋洋地冲了上来。
+
+"小子，早这样不就好了？非要挨一顿打……"
+
+就在他靠近的瞬间，你猛地催动天逆珠，一股强大的吸力从珠子中爆发出来！
+
+"什么？！"山贼头目脸色大变，身体不受控制地向你飞来。
+
+你一拳砸在他的脸上！
+
+砰——
+
+山贼头目被打得倒飞出去，满脸是血。
+
+"你……你这是什么邪术？"他惊恐地看着你。
+
+你没有回答，冲上去又是一拳。
+
+一拳、两拳、三拳……
+
+你不知道打了多少拳，直到山贼头目再也不动了，你才停下手。
+
+你喘着粗气，看着地上的尸体，心中五味杂陈。
+
+这是你第一次杀人。
+
+你以为你会害怕，会恶心。但没有。
+
+你的心，出奇的平静。
+
+"在修仙界，不是你死，就是我亡。"你喃喃道，"我不杀他，他就会杀我。"
+
+你搜了山贼头目的身，找到了几块灵石、一本残破的功法、还有一些散碎银子。
+
+"这就是……散修的生存法则吗？"`,
+    choices: [
+      { text: '继续赶路', desc: '死人身上，没什么好留恋的', next: 'rogue_journey', effects: { realm: 0.15, concept: { death: 8, slaughter: 5 }, item: 'guyi_sword', daoxin: -2 } },
+    ]
+  },
+
+  fight_to_death: {
+    title: '死战',
+    location: '荒野',
+    chapter: '第二章 · 散修',
+    text: `"我王林，宁死不降！"你嘶吼着，疯狂地向山贼头目冲去。
+
+"找死！"山贼头目大怒，一刀劈下。
+
+你不闪不避，任由刀锋砍在你的肩膀上，同时一拳轰在他的胸口。
+
+噗——
+
+两败俱伤！
+
+"你疯了！"山贼头目后退几步，捂着胸口，又惊又怒。
+
+你肩膀上血流如注，但你仿佛感觉不到疼痛，再次冲了上去。
+
+"来啊！继续啊！"你状若疯魔。
+
+山贼头目被你吓住了。他从来没见过这么不要命的人。
+
+"疯子……你这个疯子！"他转身就跑。
+
+但你怎么可能让他跑掉？
+
+你追了上去，从背后一拳砸在他的后脑勺上。
+
+山贼头目扑倒在地，昏死过去。
+
+你喘着粗气，站在他面前。
+
+杀了他？还是放了他？
+
+你的手在颤抖。
+
+这是你第一次面对这样的选择。`,
+    choices: [
+      { text: '杀了他，永绝后患', desc: '对敌人仁慈，就是对自己残忍', next: 'kill_bandit', effects: { concept: { slaughter: 8, death: 5 }, daoxin: -3, item: 'guyi_sword', realm: 0.1 } },
+      { text: '废了他的修为，放他走', desc: '得饶人处且饶人', next: 'spare_bandit', effects: { daoxin: 3, concept: { life: 5, karma: 5 }, realm: 0.05 } },
+    ]
+  },
+
+  kill_bandit: {
+    title: '第一次杀人',
+    location: '荒野',
+    chapter: '第二章 · 散修',
+    text: `你咬着牙，一掌拍在山贼头目的天灵盖上。
+
+噗——
+
+山贼头目身体抽搐了几下，便不动了。
+
+你收回手，看着自己的手掌，久久不语。
+
+你杀人了。
+
+你亲手杀了一个人。
+
+奇怪的是，你并没有感到恶心或者害怕。你的心，很平静。
+
+"在这个世界，善良是奢侈品。"你对自己说，"我要活下去，就必须变得足够强，足够狠。"
+
+你搜了山贼头目的身，找到了一些灵石和一本残破的功法。
+
+你将尸体埋了，然后继续赶路。
+
+夕阳西下，将你的影子拉得很长。
+
+从这一刻起，你知道，你已经不再是那个青牛镇上的少年了。
+
+你的手上，沾了血。
+
+你的道心，染上了杀戮的色彩。`,
+    choices: [
+      { text: '继续前行', desc: '路还很长', next: 'rogue_journey', effects: { daoxin: -2, concept: { slaughter: 5, death: 5 } } },
+    ]
+  },
+
+  spare_bandit: {
+    title: '手下留情',
+    location: '荒野',
+    chapter: '第二章 · 散修',
+    text: `你最终还是没有杀他。
+
+你废了他的修为，然后将他扔在了路边。
+
+"滚吧。以后别再做山贼了。"
+
+山贼头目连滚带爬地跑了，连头都不敢回。
+
+你看着他远去的背影，心中不知是什么滋味。
+
+"我这样做……对吗？"
+
+你不知道。
+
+你只知道，你不想变成一个滥杀无辜的人。哪怕在这个弱肉强食的修仙界，你也想守住心中的那一点善意。
+
+你包扎了伤口，继续赶路。
+
+肩膀上的伤口很疼，但你的心，很安宁。
+
+也许，这就是道吧。
+
+每个人的道，都不一样。
+
+你的道，是什么呢？`,
+    choices: [
+      { text: '继续前行', desc: '寻找属于自己的道', next: 'rogue_journey', effects: { daoxin: 5, concept: { life: 5, karma: 8 }, achievement: 'kind_choice' } },
+    ]
+  },
+
+  avoid_bandits: {
+    title: '绕道而行',
+    location: '荒野',
+    chapter: '第二章 · 散修',
+    text: `你没有硬闯，而是选择了绕路。
+
+虽然多走了几天路，但至少平安无事。
+
+"小心驶得万年船。"你对自己说。
+
+散修的日子不好过。没有宗门庇护，没有资源供给，什么都要靠自己。但你不后悔。
+
+至少，你是自由的。
+
+这日，你来到了一片山林中。
+
+忽然，你听到了一阵呼救声。
+
+"救命！救命啊！"
+
+你循声走去，只见一个少女被一头妖兽追赶，慌不择路地跑着。那妖兽是一头赤焰狼，凝气三层的样子，十分凶猛。
+
+少女看起来也是个修士，但修为不高，只有凝气一层，根本不是赤焰狼的对手。
+
+怎么办？`,
+    choices: [
+      { text: '出手相救', desc: '见死不救，非大丈夫所为', next: 'save_girl', effects: { daoxin: 3, concept: { life: 5, karma: 5 }, achievement: 'kind_choice' } },
+      { text: '趁火打劫，等妖兽杀了她再捡便宜', desc: '散修的生存法则', next: 'loot_girl', effects: { daoxin: -8, concept: { slaughter: 5, death: 3 } } },
+      { text: '躲起来，别被发现了', desc: '事不关己，高高挂起', next: 'hide_from_wolf', effects: { daoxin: -2, concept: { truth: 2 } } },
+    ]
+  },
+
+  trick_bandits: {
+    title: '智取',
+    location: '荒野',
+    chapter: '第二章 · 散修',
+    text: `你从怀里摸出一锭银子，扔了过去。
+
+"几位大哥，小的身上就这点钱了，都给你们。"
+
+山贼头目捡起银子，掂了掂，冷笑一声。
+
+"就这点？你当老子是叫花子？"
+
+"大哥，我真的只有这些了。"你装出一副可怜巴巴的样子，"我就是个穷书生，去投奔亲戚的……"
+
+你一边说，一边暗中催动灵力，准备随时动手。
+
+山贼头目上下打量着你，似乎在判断你说的是真是假。
+
+"穷书生？"他嗤笑，"穷书生能穿这么好的衣服？"
+
+他挥了挥手。"搜他的身！"
+
+两个山贼走上前来。
+
+就在这时，你突然发难！你一掌拍在左边山贼的胸口，同时一脚踢向右边山贼的肚子。两个山贼猝不及防，被你打倒在地。
+
+"什么？！"山贼头目大惊，"你是修士？"
+
+"怎么，只许你做山贼，不许我是修士？"你冷笑。
+
+山贼头目脸色阴晴不定。他看不透你的修为，但你能瞬间放倒他两个手下，说明实力不弱。
+
+"走！"他一咬牙，带着手下灰溜溜地跑了。
+
+你看着他们远去的背影，松了口气。
+
+幸好没打起来。真打起来，你未必是对手。`,
+    choices: [
+      { text: '继续赶路', desc: '此地不宜久留', next: 'rogue_journey', effects: { daoxin: 2, concept: { truth: 5 } } },
+    ]
+  },
+
+  save_girl: {
+    title: '英雄救美',
+    location: '山林',
+    chapter: '第二章 · 散修',
+    text: `你没有多想，冲了上去。
+
+"孽畜，休得伤人！"
+
+你一拳轰向赤焰狼。赤焰狼察觉到危险，放弃了少女，转身向你扑来。
+
+一人一狼战在了一起。
+
+赤焰狼虽然只是凝气三层，但皮糙肉厚，力大无穷，而且口中还能喷吐火焰。你打得十分艰难，身上添了好几道伤口。
+
+但你没有退缩。
+
+"坚持住……我一定能赢！"
+
+你抓住一个机会，一拳砸在赤焰狼的眼睛上。赤焰狼发出一声惨嚎，后退了几步。
+
+就是现在！
+
+你催动全身灵力，使出了最强的一击，一拳轰在赤焰狼的头上。
+
+砰——
+
+赤焰狼的脑袋被打得粉碎，倒在地上，抽搐了几下便不动了。
+
+你喘着粗气，瘫坐在地上。
+
+"多谢公子救命之恩！"少女跑了过来，对你盈盈一拜，"小女子柳如烟，感激不尽。"
+
+你抬起头，这才看清少女的容貌——眉如远山，目似秋水，美得不可方物。
+
+你愣了一下，随即移开目光。
+
+"举手之劳，不足挂齿。"`,
+    choices: [
+      { text: '与柳如烟结伴而行', desc: '多个伴，路上也有个照应', next: 'travel_with_girl', effects: { concept: { karma: 5, life: 3 }, daoxin: 2 } },
+      { text: '分道扬镳，各走各的', desc: '男女同行，多有不便', next: 'part_ways', effects: { daoxin: 1, concept: { truth: 2 } } },
+    ]
+  },
+
+  travel_with_girl: {
+    title: '同行',
+    location: '前往坊市的路上',
+    chapter: '第二章 · 散修',
+    text: `你和柳如烟结伴而行。
+
+柳如烟是个散修，也是去坊市的。她性格开朗，一路上叽叽喳喳说个不停，倒也不寂寞。
+
+通过交谈，你了解到她是个孤儿，从小被一个散修收养，养父去世后，她便一个人在修仙界闯荡。
+
+"王林，你呢？你为什么要做散修啊？"柳如烟好奇地问，"以你的资质，加入宗门应该不难吧？"
+
+你笑了笑。"宗门有宗门的规矩，散修有散修的自由。"
+
+"自由？"柳如烟歪着头，"可是散修好辛苦啊……什么都要靠自己，动不动就有生命危险。"
+
+"辛苦是辛苦，但至少……不用看别人的脸色。"你望着远方，"我这个人，最不喜欢受人管束。"
+
+柳如烟看着你，眼中闪过一丝异样的光芒。
+
+"王林，你真特别。"
+
+你笑了笑，没有说话。
+
+夕阳下，两个人的影子被拉得很长。
+
+你忽然觉得，散修的路，似乎也没有那么孤单。`,
+    choices: [
+      { text: '继续赶路，前往坊市', desc: '坊市就在前方了', next: 'arrive_market', effects: { concept: { karma: 3 }, daoxin: 1 } },
+    ]
+  },
+
+  rogue_journey: {
+    title: '漫漫仙途',
+    location: '东域',
+    chapter: '第二章 · 散修',
+    text: `你一路向东，走了三个多月。
+
+这三个多月里，你经历了很多。
+
+你见过为了一株灵草拼得你死我活的散修，见过杀人越货的邪修，也见过路见不平拔刀相助的义士。
+
+修仙界的残酷，你算是见识到了。
+
+但你也在成长。
+
+你的修为提升到了凝气七层，战斗经验也丰富了很多。更重要的是，你的道心，在一次次的磨砺中变得更加坚定。
+
+这日，你终于来到了传说中的散修坊市——落云坊。
+
+坊市建在一座山谷中，人来人往，十分热闹。各种摊位沿街摆开，售卖着各种各样的修仙物品。
+
+"好热闹……"你喃喃道。
+
+这是你第一次来坊市，一切都让你感到新奇。`,
+    choices: [
+      { text: '四处逛逛，了解一下行情', desc: '先摸摸底', next: 'arrive_market', effects: { concept: { truth: 3 } } },
+      { text: '找个地方住下，再做打算', desc: '先安顿下来', next: 'rent_cave', effects: { daoxin: 1 } },
+    ]
+  },
+
+  arrive_market: {
+    title: '落云坊',
+    location: '落云坊市',
+    chapter: '第三章 · 机缘',
+    text: `落云坊市比你想象的还要热闹。
+
+街道两旁，各种摊位鳞次栉比。有卖丹药的，有卖符箓的，有卖法宝的，还有卖功法的……五花八门，应有尽有。
+
+你一边走一边看，大开眼界。
+
+忽然，一个不起眼的小摊引起了你的注意。
+
+摊主是个白发老者，闭着眼睛坐在那里，仿佛睡着了一般。他的摊位上只摆了几样东西——一块残破的玉简、一把锈迹斑斑的铁剑、还有一颗灰蒙蒙的石头。
+
+别人的摊位前都人来人往，唯独这个摊位前冷冷清清。
+
+但你走到这个摊位前的时候，天逆珠突然微微发热。
+
+"嗯？"你心中一动。
+
+天逆珠有反应？说明这里有什么东西和它有关？
+
+你看向摊位上的几样东西。
+
+是哪一个呢？`,
+    choices: [
+      { text: '问价那块残破的玉简', desc: '玉简里可能有功法', next: 'buy_jade', effects: { concept: { truth: 3 } } },
+      { text: '问价那把锈迹斑斑的铁剑', desc: '这把剑看起来不简单', next: 'buy_sword', effects: { concept: { slaughter: 3 } } },
+      { text: '问价那颗灰蒙蒙的石头', desc: '天逆珠对它反应最大', next: 'buy_stone', effects: { concept: { samsara: 5 } } },
+    ]
+  },
+
+  buy_stone: {
+    title: '古神玉简',
+    location: '落云坊市',
+    chapter: '第三章 · 机缘',
+    text: `"老人家，这块石头怎么卖？"你指着那颗灰蒙蒙的石头问道。
+
+老者睁开眼睛，看了你一眼，又看了看石头。
+
+"你要这个？"老者似乎有些意外，"这就是一块普通的石头，没什么用。你要是想要，一块下品灵石拿走吧。"
+
+一块下品灵石？你身上也就十几块下品灵石，这石头就要一块？
+
+但天逆珠的反应不会错。
+
+"好，我买了。"你取出一块灵石，递给老者。
+
+老者接过灵石，将石头递给你。"拿去吧。"
+
+你接过石头，入手冰凉，沉甸甸的，确实像是一块普通的石头。但你能感觉到，天逆珠在你怀里微微震动，似乎很兴奋。
+
+"多谢老人家。"
+
+你拿着石头，找了一家客栈，开了一间房。
+
+关上门，你将石头拿出来，仔细端详。
+
+"这到底是什么东西……"
+
+你试着将灵力注入石头，但石头毫无反应。你又用天逆珠的泉水浇在石头上——
+
+嗡——
+
+石头突然发出耀眼的光芒！
+
+表面的石皮层层剥落，露出了里面的东西——一块玉简，一块散发着古老气息的玉简！
+
+"这是……"你震惊不已。
+
+玉简上刻着四个古字——
+
+"古神传承。"`,
+    choices: [
+      { text: '查看玉简内容', desc: '古神传承！这是天大的机缘！', next: 'ancient_god_jade', effects: { item: 'guyi_jade', concept: { samsara: 10, time: 5 }, achievement: 'ancient_god' } },
+    ]
+  },
+
+  ancient_god_jade: {
+    title: '古神传承',
+    location: '落云坊 · 客栈',
+    chapter: '第三章 · 机缘',
+    text: `你将神识探入玉简。
+
+轰——
+
+你的脑海中仿佛炸开了一道惊雷，无数信息涌入你的脑海。
+
+那是一段古老的记忆——
+
+天地初开，万物混沌。有巨人诞生于虚无之中，名曰"古神"。古神以天地为炉，以万物为薪，创造了星辰，创造了生命，创造了整个世界。
+
+古神之力，可搬山填海，可摘星拿月，可逆转生死，可颠覆轮回。
+
+然而，古神最终陨落了。
+
+没有人知道古神是怎么死的。只知道，古神死后，他的力量散落在天地之间，形成了各种各样的传承。
+
+而你手中的这块玉简，就是古神传承之一。
+
+"古神经……"你喃喃道。
+
+这是一部修炼功法，一部以力证道的功法。修炼到极致，可以拥有古神之力，肉身成圣，万法不侵。
+
+但这部功法有一个问题——它需要极其庞大的资源，而且修炼过程极其痛苦。稍有不慎，就会爆体而亡。
+
+"以力证道吗……"你握紧了拳头。
+
+这条路，很难。
+
+但一旦走通了，便是通天大道！`,
+    choices: [
+      { text: '修炼古神经！', desc: '富贵险中求', next: 'cultivate_god', effects: { realm: 0.5, concept: { slaughter: 10, life: 10, death: 10 }, daoxin: 5 } },
+      { text: '先不急，研究研究再说', desc: '这么重要的功法，不能草率', next: 'study_god_art', effects: { concept: { truth: 5, time: 5 }, daoxin: 2 } },
+    ]
+  },
+
+  cultivate_god: {
+    title: '古神之体',
+    location: '落云坊 · 客栈',
+    chapter: '第三章 · 机缘',
+    text: `你决定修炼古神经。
+
+按照玉简上的记载，你开始了第一次修炼。
+
+古神经的修炼方法很简单——就是不断地破坏自己的身体，然后用灵力修复。破坏，修复，再破坏，再修复……如此循环往复，让身体在毁灭与新生中不断变强。
+
+这是一种自虐式的修炼方法。
+
+"啊——！"
+
+你发出一声痛苦的嘶吼。
+
+骨头在断裂，经脉在撕裂，肌肉在粉碎……那种痛苦，根本不是常人能够忍受的。
+
+你好几次都想放弃。
+
+但你一想到自己这些年受的苦，一想到那些看不起你的人，一想到你的道——
+
+"我不能放弃！"
+
+"我王林，绝不认输！"
+
+你咬着牙，硬生生扛了下来。
+
+一天……两天……三天……
+
+不知道过了多久，当你终于完成第一次修炼的时候，你整个人都虚脱了。
+
+但你能感觉到，你的身体变强了。比之前强了不止一倍！
+
+"这就是……古神之力吗……"你虚弱地笑了。
+
+虽然痛苦，但值得。`,
+    choices: [
+      { text: '继续修炼，提升实力', desc: '痛苦只是暂时的', next: 'god_cultivation_2', effects: { realm: 0.5, concept: { life: 5, death: 5 }, daoxin: 3 } },
+    ]
+  },
+
+  god_cultivation_2: {
+    title: '筑基成功',
+    location: '落云坊',
+    chapter: '第三章 · 机缘',
+    text: `又过了三个月。
+
+在古神经和天逆珠的双重辅助下，你的修为突飞猛进，竟然直接突破到了筑基期！
+
+而且，你的肉身强度，更是远超同阶修士。普通筑基期的修士，根本不是你的对手。
+
+"终于筑基了……"你握了握拳头，感受着体内澎湃的力量。
+
+但你也知道，这只是开始。
+
+筑基之后，还有结丹、元婴、化神……路还很长。
+
+这日，你正在客栈里修炼，忽然听到外面传来一阵喧哗。
+
+"听说了吗？上古遗迹要开启了！"
+
+"什么遗迹？"
+
+"据说是一位上古大能的洞府，里面有无数宝物！"
+
+"真的假的？在哪里？"
+
+"就在落云山脉深处！好多修士都赶过去了！"
+
+上古遗迹？
+
+你心中一动。
+
+这是一个机会。`,
+    choices: [
+      { text: '去看看，说不定有机缘', desc: '富贵险中求', next: 'ancient_ruins', effects: { concept: { samsara: 3, truth: 3 }, daoxin: 1 } },
+      { text: '不去，太危险了', desc: '明哲保身', next: 'stay_safe', effects: { daoxin: 2, concept: { death: 2 } } },
+    ]
+  },
+
+  ancient_ruins: {
+    title: '上古遗迹',
+    location: '落云山脉深处',
+    chapter: '第四章 · 遗迹',
+    text: `你来到了落云山脉深处。
+
+这里已经聚集了不少修士，有散修，也有宗门弟子。大家都在等待遗迹开启。
+
+忽然，天空中传来一声巨响——
+
+轰！
+
+一道巨大的光柱从天而降，落在了前方的山谷中。光芒散去，一座古老的宫殿出现在了众人面前。
+
+宫殿巍峨壮观，散发着古老而神秘的气息。
+
+"遗迹开启了！冲啊！"
+
+不知是谁喊了一声，众人争先恐后地向宫殿冲去。
+
+你也跟着人群冲了过去。
+
+宫殿大门敞开着，里面黑漆漆的，看不清有什么。
+
+你深吸一口气，走了进去。
+
+宫殿内部很大，到处都是灰尘，显然已经很多年没有人来过了。墙壁上刻着各种各样的壁画，描绘着一个巨人开天辟地的场景。
+
+"古神……"你心中暗道。
+
+这些壁画，和古神玉简中记载的一模一样。
+
+看来，这座遗迹和古神有关！`,
+    choices: [
+      { text: '向宫殿深处探索', desc: '宝物肯定在最里面', next: 'deep_ruins', effects: { concept: { samsara: 5 }, daoxin: 1 } },
+      { text: '小心行事，先在外围看看', desc: '枪打出头鸟', next: 'outer_ruins', effects: { daoxin: 2, concept: { truth: 3 } } },
+    ]
+  },
+
+  deep_ruins: {
+    title: '古神之殿',
+    location: '遗迹深处',
+    chapter: '第四章 · 遗迹',
+    text: `你一路向宫殿深处走去。
+
+沿途有不少机关禁制，但都被你一一破解了——古神玉简中有关于禁制的记载，这些禁制在你面前如同虚设。
+
+很快，你来到了宫殿最深处——一座大殿。
+
+大殿中央，有一座石台，石台上放着一个盒子。
+
+盒子旁边，盘坐着一具骸骨。骸骨穿着一身金色的铠甲，虽然已经死去多年，但依然散发着一股威严的气息。
+
+"这应该就是这座遗迹的主人了……"你心中暗道。
+
+你走到石台前，对着骸骨躬身一拜。
+
+"晚辈王林，无意冒犯前辈。今日有缘来到此地，若能得前辈传承，定当铭记于心。"
+
+说完，你伸出手，打开了盒子。
+
+盒子里，放着三样东西——
+
+一颗丹药，色泽金黄，香气扑鼻，一看就不是凡品。
+
+一枚玉简，散发着柔和的光芒。
+
+还有一面小旗，旗面上绘着山川河流，栩栩如生。
+
+就在你准备拿起这些东西的时候，身后传来了脚步声。
+
+"站住！"
+
+你转过身，只见几个修士走了进来，为首的是一个身穿华服的青年，面容倨傲，眼神轻蔑。
+
+"把东西放下，饶你不死。"青年淡淡道。`,
+    choices: [
+      { text: '凭你也配？', desc: '想要宝物，就看你有没有命拿', next: 'fight_ruins', effects: { concept: { slaughter: 5 }, daoxin: 2 } },
+      { text: '东西可以分你一些', desc: '没必要拼个你死我活', next: 'share_ruins', effects: { daoxin: -1, concept: { karma: 3 } } },
+    ]
+  },
+
+  fight_ruins: {
+    title: '遗迹之战',
+    location: '古神殿',
+    chapter: '第四章 · 遗迹',
+    text: `"凭你也配？"你冷笑。
+
+"找死！"华服青年大怒，"给我上！杀了他！"
+
+他身后的几个修士立刻向你扑来。
+
+这些人都是筑基期的修士，实力不弱。但你有古神之体，肉身强度远超同阶，根本不把他们放在眼里。
+
+你一拳轰出，正面迎上！
+
+砰——
+
+冲在最前面的那个修士直接被你一拳打飞，口吐鲜血，昏死过去。
+
+"什么？！"剩下的人都惊呆了。
+
+"一起上！他只有一个人！"
+
+几人一拥而上。
+
+你不闪不避，任由他们的攻击落在你身上。古神之体的防御力超乎想象，他们的攻击打在你身上，就像挠痒痒一样。
+
+"轮到我了。"你冷笑一声，展开了反击。
+
+一拳一个。
+
+不过片刻功夫，几个修士就都被你打倒在地。
+
+华服青年脸色大变。
+
+"你……你是什么人？"
+
+"要你命的人。"你一步步向他走去。
+
+华服青年又惊又怕，突然从怀里掏出一张符箓。
+
+"你别过来！这是上品爆炎符！你再过来，我就跟你同归于尽！"`,
+    choices: [
+      { text: '我看你敢不敢用', desc: '继续逼近', next: 'dare_you', effects: { concept: { slaughter: 5, death: 5 }, daoxin: -2 } },
+      { text: '停下，放他走', desc: '上品爆炎符的威力不可小觑', next: 'let_him_go', effects: { daoxin: 2, concept: { truth: 3 } } },
+    ]
+  },
+
+  dare_you: {
+    title: '爆炎之威',
+    location: '古神殿',
+    chapter: '第四章 · 遗迹',
+    text: `"我看你敢不敢。"你继续向前走去。
+
+"你……你别逼我！"华服青年脸色苍白，手在颤抖。
+
+你一步一步逼近。
+
+"住手！我真的会用的！"
+
+你没有停。
+
+"啊——！"华服青年尖叫一声，真的捏碎了符箓。
+
+轰——！！
+
+一团巨大的火球在大殿中炸开，炽热的气浪席卷四方。整个大殿都在震动，墙壁上的碎石簌簌落下。
+
+你被气浪掀飞，重重地撞在墙壁上，一口鲜血喷了出来。
+
+"咳咳……"你挣扎着站起来，浑身是伤，狼狈不堪。
+
+但你没有死。
+
+古神之体的防御力救了你一命。
+
+华服青年也不好受——爆炎符的威力太大，他离得又近，直接被炸得飞了出去，生死不知。
+
+你喘着粗气，走到华服青年面前。
+
+他还没死，但也只剩一口气了。
+
+"你……你这个怪物……"他艰难地说道，眼中满是恐惧。
+
+你看着他，心中没有波澜。`,
+    choices: [
+      { text: '杀了他', desc: '斩草不除根，春风吹又生', next: 'kill_hua', effects: { concept: { slaughter: 8, death: 5 }, daoxin: -3, item: 'pozu_jian' } },
+      { text: '废了他的修为，让他自生自灭', desc: '我不杀你，但你也别想再修仙了', next: 'disable_hua', effects: { daoxin: 1, concept: { life: 3, karma: 3 } } },
+    ]
+  },
+
+  kill_hua: {
+    title: '斩草除根',
+    location: '古神殿',
+    chapter: '第四章 · 遗迹',
+    text: `你一掌拍在他的天灵盖上。
+
+噗——
+
+华服青年头一歪，死了。
+
+你搜了他的身，找到了不少好东西——灵石、丹药、还有一把品相不错的飞剑。
+
+"算你还有点价值。"你喃喃道。
+
+你将石台上的三样东西都收了起来，然后对着骸骨又拜了一拜。
+
+"多谢前辈馈赠。"
+
+就在你准备离开的时候，骸骨突然发出了光芒。
+
+一道虚影从骸骨中浮现出来——是一个身穿金甲的巨人，面容模糊，但气势磅礴。
+
+"年轻人……"虚影开口了，声音如同雷鸣，"你能来到这里，说明你与我有缘。"
+
+"前辈是……"
+
+"吾乃古神座下，金甲战神。"虚影道，"吾已死去无数岁月，残魂寄宿于此，等待有缘人。"
+
+"你既然得到了古神经，便是古神的传人。"虚影看着你，"你愿意……继承我的传承吗？"`,
+    choices: [
+      { text: '弟子愿意！', desc: '这是天大的机缘！', next: 'inherit_god', effects: { realm: 0.8, concept: { samsara: 15, slaughter: 10, life: 10, death: 10, time: 10 }, daoxin: 5, achievement: 'ancient_god' } },
+      { text: '前辈的传承太过贵重，弟子怕是承受不起', desc: '无功不受禄', next: 'refuse_inherit', effects: { daoxin: 3, concept: { truth: 5, karma: 5 } } },
+    ]
+  },
+
+  inherit_god: {
+    title: '金甲传承',
+    location: '古神殿',
+    chapter: '第四章 · 遗迹',
+    text: `"好！好！好！"虚影大笑三声，"从今日起，你便是吾的传人！"
+
+虚影伸出手，按在你的额头上。
+
+轰——
+
+一股庞大的力量涌入你的体内，同时还有无数的信息——功法、战技、禁制、炼丹、炼器……应有尽有。
+
+你感到自己的身体在发生着翻天覆地的变化。古神之体变得更加强大，修为也在飞速提升。
+
+筑基中期……筑基后期……筑基巅峰……
+
+差一步，就能突破到结丹期！
+
+不知过了多久，虚影渐渐变得暗淡。
+
+"传承……已经给你了……"虚影虚弱地说，"年轻人，记住……古神一脉，以力证道，一往无前……"
+
+"不要……堕了……古神的威名……"
+
+虚影彻底消散了。
+
+你站在原地，久久不语。
+
+"前辈放心，"你郑重地说，"我王林，绝不会让古神一脉蒙尘！"
+
+你对着骸骨拜了三拜，然后转身离开了遗迹。
+
+外面的天空，阳光正好。
+
+你深吸一口气，大步向前走去。
+
+从今天起，你的人生，将彻底不同。`,
+    choices: [
+      { text: '离开遗迹，开始新的旅程', desc: '结丹之路，就在前方', next: 'road_to_jiedan', effects: { realm: 1.5, daoxin: 3, concept: { time: 5 } } },
+    ]
+  },
+
+  // ========== 结丹与天劫 ==========
+  road_to_jiedan: {
+    title: '结丹之路',
+    location: '东域',
+    chapter: '第五章 · 天劫',
+    text: `时光荏苒，又是三年。
+
+这三年里，你游历四方，经历了无数生死考验。你的修为稳步提升，终于达到了筑基巅峰，距离结丹只有一步之遥。
+
+但这一步，难如登天。
+
+结丹，需要渡天劫。
+
+天劫，是天地对修士的考验。渡过去了，便是鱼跃龙门。渡不过去，便是灰飞烟灭。
+
+古往今来，多少惊才绝艳之辈，都陨落在了天劫之下。
+
+这日，你来到了一座荒无人烟的大山中，准备渡劫。
+
+你站在山顶，望着天空。
+
+乌云汇聚，电闪雷鸣。
+
+天劫，要来了。
+
+你的心，出奇的平静。
+
+"来吧。"你喃喃道，"让我看看，这天劫，到底有多强。"`,
+    choices: [
+      { text: '正面硬抗天劫', desc: '古神之体，何惧天劫！', next: 'tribulation_hard', effects: { concept: { slaughter: 10, death: 10 }, daoxin: 5 } },
+      { text: '用天逆珠辅助渡劫', desc: '有宝物不用是傻子', next: 'tribulation_tianni', effects: { concept: { life: 5, samsara: 5 }, daoxin: -2 } },
+      { text: '布下禁制，层层防御', desc: '小心驶得万年船', next: 'tribulation_defense', effects: { concept: { truth: 5 }, daoxin: 2 } },
+    ]
+  },
+
+  tribulation_hard: {
+    title: '天劫',
+    location: '荒山之巅',
+    chapter: '第五章 · 天劫',
+    text: `轰——！！
+
+第一道天雷劈了下来！
+
+你不闪不避，硬生生扛了下来！
+
+滋啦——
+
+雷电在你身上游走，剧烈的疼痛让你几乎晕厥。但你咬着牙，死死支撑。
+
+"不够！还不够！"你嘶吼道。
+
+古神之体在天雷的淬炼下，变得更加强大。你的肉体，在毁灭与新生中不断进化。
+
+第二道天雷……第三道天雷……第四道天雷……
+
+一道比一道强。
+
+你的身体已经伤痕累累，鲜血淋漓。但你的眼神，却越来越亮。
+
+"第九道天雷了……"你望着天空，"最后一道了！"
+
+乌云翻滚，雷声震天。
+
+第九道天雷，是最强的一道。
+
+轰——！！！
+
+一道水缸粗细的紫色天雷，带着毁天灭地之势，向你劈来！
+
+你大吼一声，将全身力量凝聚于拳头上，迎了上去！
+
+"给我——破！！"
+
+砰——！！！
+
+拳头与天雷相撞，发出一声惊天动地的巨响。
+
+整个山顶都被光芒笼罩了。
+
+……
+
+光芒散去。
+
+你站在原地，浑身焦黑，头发倒竖，模样狼狈不堪。
+
+但你还站着。
+
+你赢了。
+
+"结丹——！"你大吼一声。
+
+体内的灵力疯狂涌动，在丹田中凝聚、压缩……最终，形成了一颗金色的丹药！
+
+结丹……成功了！`,
+    choices: [
+      { text: '天劫已过，结丹成功！', desc: '从今天起，我便是结丹修士！', next: 'jiedan_success', effects: { realm: 2, daoxin: 5, concept: { life: 10, death: 10, slaughter: 10 }, achievement: 'tribulation_survive' } },
+    ]
+  },
+
+  tribulation_tianni: {
+    title: '天逆渡劫',
+    location: '荒山之巅',
+    chapter: '第五章 · 天劫',
+    text: `天雷落下的瞬间，你催动了天逆珠。
+
+一道灰色的光罩将你笼罩其中。
+
+轰——！
+
+天雷劈在光罩上，发出一声巨响。光罩剧烈晃动，但最终还是挡住了。
+
+"好强的天雷……"你心有余悸。
+
+如果没有天逆珠，这第一道天雷就够你受的了。
+
+第二道、第三道……
+
+天逆珠的光罩挡住了一道又一道天雷。但你能感觉到，天逆珠的力量在消耗，光罩越来越淡。
+
+"不行，这样下去不是办法。"你心中暗道，"天逆珠的力量总有耗尽的时候。"
+
+而且，你隐隐觉得，天劫是对修士的考验。如果完全靠外力渡劫，对以后的修行不利。
+
+第八道天雷落下。
+
+光罩终于破碎了。
+
+第九道天雷，即将落下。
+
+你必须做出选择——
+
+是继续催动天逆珠，还是靠自己的力量扛过这最后一道天雷？`,
+    choices: [
+      { text: '靠自己！正面硬抗！', desc: '我的道，要靠自己走！', next: 'tribulation_final', effects: { daoxin: 5, concept: { slaughter: 10, death: 10, karma: 5 } } },
+      { text: '继续催动天逆珠', desc: '活下去才是最重要的', next: 'tribulation_cheat', effects: { daoxin: -5, concept: { truth: -5, samsara: 5 } } },
+    ]
+  },
+
+  tribulation_final: {
+    title: '最后一道天雷',
+    location: '荒山之巅',
+    chapter: '第五章 · 天劫',
+    text: `"我的道，要靠自己走！"
+
+你收起天逆珠，昂首望天。
+
+第九道天雷，带着毁天灭地之势，劈了下来！
+
+"啊——！"你大吼一声，将全身力量凝聚于一点，迎了上去！
+
+轰——！！！
+
+剧烈的疼痛让你几乎失去意识。你的身体在天雷中颤抖，仿佛随时都会碎裂。
+
+但你没有倒下。
+
+"我不能输！"
+
+"我王林，绝不认输！"
+
+你咬紧牙关，硬生生扛了下来！
+
+天雷渐渐消散。
+
+你浑身焦黑地站在那里，浑身是伤，模样狼狈到了极点。
+
+但你还活着。
+
+你赢了。
+
+"结丹……"你虚弱地笑了。
+
+丹田中，一颗金色的丹药缓缓旋转，散发着强大的气息。
+
+结丹……成功了！
+
+你仰天大笑。
+
+"哈哈哈……我成功了！我王林，成功了！"
+
+笑声在山谷中回荡，久久不息。`,
+    choices: [
+      { text: '天劫已过，结丹成功！', desc: '从今天起，我便是结丹修士！', next: 'jiedan_success', effects: { realm: 2, daoxin: 5, concept: { life: 10, death: 10, time: 5 }, achievement: 'tribulation_survive' } },
+    ]
+  },
+
+  tribulation_cheat: {
+    title: '取巧',
+    location: '荒山之巅',
+    chapter: '第五章 · 天劫',
+    text: `你拼命催动天逆珠，珠子发出耀眼的灰光。
+
+第九道天雷劈下！
+
+轰——！！
+
+光罩与天雷相撞，发出一声惊天动地的巨响。
+
+整个山顶都被光芒笼罩了。
+
+……
+
+光芒散去。
+
+你瘫坐在地上，大口喘着气。
+
+天逆珠黯淡无光，显然消耗巨大。但你活下来了。
+
+"成功了……"你喃喃道，"我渡劫成功了……"
+
+你内视丹田，一颗金色的丹药在缓缓旋转。
+
+结丹成功了。
+
+但不知道为什么，你心中并没有太多喜悦。反而有一种……空落落的感觉。
+
+这颗金丹，不是你靠自己的力量凝结的。
+
+它是靠天逆珠作弊得来的。
+
+"这样……真的好吗？"你问自己。
+
+没有人回答。
+
+风吹过，带着一丝凉意。
+
+你的道心，似乎有了一丝裂痕。`,
+    choices: [
+      { text: '不管怎样，活着就好', desc: '结果比过程重要', next: 'jiedan_success', effects: { realm: 1.8, daoxin: -5, concept: { truth: -5 }, achievement: 'tribulation_survive' } },
+    ]
+  },
+
+  tribulation_defense: {
+    title: '层层防御',
+    location: '荒山之巅',
+    chapter: '第五章 · 天劫',
+    text: `你在山顶布下了七七四十九层禁制。
+
+有防御禁制，有反弹禁制，有削弱禁制……层层叠叠，将整个山顶都包裹了起来。
+
+"这样应该没问题了。"你擦了擦额头的汗。
+
+轰——
+
+第一道天雷落下。
+
+禁制一层一层地被击碎，但天雷的威力也在不断削弱。当第一道天雷落到你面前的时候，已经只剩下不到三成的威力了。
+
+你轻易地挡了下来。
+
+"不错，效果比我想象的还要好。"
+
+第二道、第三道……
+
+禁制不断被摧毁，天雷的威力也越来越强。到了第八道天雷的时候，所有的禁制都已经被摧毁了。
+
+第九道天雷，是最强的一道。
+
+你深吸一口气，将全身力量都调动起来。
+
+"来吧！"
+
+轰——！！
+
+紫色的天雷劈下，你正面迎上！
+
+砰——！！
+
+你被天雷劈得倒飞出去，重重地摔在地上，一口鲜血喷了出来。
+
+但你没有死。
+
+你挣扎着站起来，浑身是伤，但眼神坚定。
+
+"我……扛过来了……"`,
+    choices: [
+      { text: '天劫已过，结丹成功！', desc: '智慧也是实力的一部分', next: 'jiedan_success', effects: { realm: 1.9, daoxin: 3, concept: { truth: 10, time: 5 }, achievement: 'tribulation_survive' } },
+    ]
+  },
+
+  jiedan_success: {
+    title: '结丹之后',
+    location: '荒山之巅',
+    chapter: '第六章 · 问心',
+    text: `结丹之后，你的实力有了质的飞跃。
+
+寿元增加到了五百年，可以御剑飞行，可以施展更强大的法术……
+
+但你也知道，结丹只是开始。
+
+元婴、化神、婴变、问鼎……路还很长。
+
+这日，你御剑飞行，路过一座小镇。
+
+小镇上空，乌云密布，魔气冲天。
+
+"嗯？"你眉头一皱。
+
+有邪修在害人！
+
+你降下剑光，走进小镇。
+
+小镇里尸横遍野，血流成河。一个身穿黑袍的邪修站在小镇中央，正在吸取镇民的精血修炼魔功。
+
+"住手！"你大喝一声。
+
+邪修转过身，露出一张苍白的脸。他的眼睛是血红色的，散发着邪恶的气息。
+
+"哦？又来一个送死的？"邪修舔了舔嘴唇，"结丹期……正好，你的精血，我要了。"
+
+你握紧了拳头。
+
+这个邪修，也是结丹期的修为。而且他修炼的是魔功，手段残忍，实力不容小觑。`,
+    choices: [
+      { text: '杀了他，为民除害', desc: '此等邪修，人人得而诛之', next: 'kill_evil', effects: { daoxin: 3, concept: { slaughter: 8, life: 5, karma: 5 }, achievement: 'kind_choice' } },
+      { text: '劝他回头是岸', desc: '放下屠刀，立地成佛', next: 'persuade_evil', effects: { daoxin: 2, concept: { truth: 3, karma: 8 } } },
+      { text: '不管，走自己的路', desc: '事不关己，高高挂起', next: 'ignore_evil', effects: { daoxin: -5, concept: { death: 5 } } },
+    ]
+  },
+
+  kill_evil: {
+    title: '正邪之战',
+    location: '小镇废墟',
+    chapter: '第六章 · 问心',
+    text: `"找死！"邪修冷笑，向你扑来。
+
+你们战在了一起。
+
+邪修的魔功十分诡异，招式阴狠毒辣，防不胜防。但你有古神之体，肉身强横，硬生生扛住了他的攻击。
+
+"你的身体……怎么可能这么强？"邪修又惊又怒。
+
+"因为你练的，是歪门邪道。"你冷冷道。
+
+你一拳轰出，正面击中邪修的胸口。
+
+砰——
+
+邪修被打飞出去，口吐鲜血。
+
+"不可能……我修炼了魔功，怎么可能打不过你……"邪修难以置信。
+
+"魔功？"你冷笑，"靠吸食他人精血得来的力量，终究是空中楼阁，不堪一击。"
+
+你走到邪修面前。
+
+"还有什么遗言吗？"
+
+邪修抬起头，突然笑了。
+
+"你以为……你是什么好人？"他咳出一口血，"你手上沾的血，未必比我少。"
+
+你愣住了。
+
+"你杀过多少人？你敢说，你杀的都是该死的人？"邪修狞笑着，"你和我，其实是一样的。我们都是……为了活下去，不择手段的人。"
+
+你的心，猛地一震。`,
+    choices: [
+      { text: '不一样！我杀的都是该杀之人！', desc: '我和他不一样！', next: 'different_from_evil', effects: { daoxin: -3, concept: { truth: -3, slaughter: 5 } } },
+      { text: '……也许你说得对', desc: '我和他，真的不一样吗？', next: 'same_as_evil', effects: { daoxin: 2, concept: { truth: 8, samsara: 5 } } },
+      { text: '少废话，受死！', desc: '杀了他，一了百了', next: 'execute_evil', effects: { daoxin: -2, concept: { slaughter: 10, death: 5 } } },
+    ]
+  },
+
+  same_as_evil: {
+    title: '问心',
+    location: '小镇废墟',
+    chapter: '第六章 · 问心',
+    text: `你沉默了很久。
+
+"也许……你说得对。"你缓缓道，"我和你，确实没有太大的区别。"
+
+"你手上有血，我手上也有血。你为了修炼杀人，我为了活下去也杀过人。"
+
+"但是——"你抬起头，眼神坚定，"有一点不一样。"
+
+"你杀人，是为了满足自己的贪欲。你吸的，是无辜之人的血。"
+
+"我杀人，是为了保护，为了生存。我杀的，都是要杀我的人。"
+
+"这就是我和你的区别。"
+
+邪修愣住了。
+
+然后，他哈哈大笑起来。
+
+"好……好一个区别……"他笑着笑着，咳出了血，"你说得对……我们不一样……"
+
+"我是为了贪欲而杀人，你是为了生存而杀人……"
+
+"哈哈哈……到头来，我竟然还不如你这个手上沾血的人……"
+
+他的声音越来越低。
+
+"如果……有来生……我也想……走一条不一样的路……"
+
+邪修头一歪，死了。
+
+你站在原地，久久不语。
+
+风吹过，带着血腥气。
+
+"来生吗……"你喃喃道，"如果有来生……我又会是什么样子呢？"`,
+    choices: [
+      { text: '埋葬了小镇的人，然后离开', desc: '愿逝者安息', next: 'bury_town', effects: { daoxin: 5, concept: { samsara: 10, karma: 10, life: 5, death: 5 } } },
+    ]
+  },
+
+  bury_town: {
+    title: '逝者已矣',
+    location: '小镇外',
+    chapter: '第六章 · 问心',
+    text: `你花了一天的时间，将小镇上的死者一一埋葬。
+
+你在每个坟前都立了一块木牌，虽然你不知道他们的名字。
+
+"愿你们……来世能投个好人家。"你喃喃道。
+
+做完这一切，你站在坟前，久久不语。
+
+你想起了青牛镇，想起了你的父母。
+
+"不知道……他们现在怎么样了……"
+
+你离家已经很多年了。这些年，你一直在外闯荡，从来没有回去过。
+
+"等我修为再高一些……就回去看看吧。"
+
+你转身离去。
+
+夕阳西下，将你的影子拉得很长。
+
+你的道心，在这一天，变得更加坚定了。
+
+你知道了你为什么而修炼——
+
+不是为了长生，不是为了力量。
+
+而是为了……守护。
+
+守护你想守护的人，守护你想守护的东西。
+
+这，就是你的道。`,
+    choices: [
+      { text: '继续前行', desc: '路还很长', next: 'final_chapter', effects: { daoxin: 5, concept: { karma: 5, time: 5 } } },
+    ]
+  },
+
+  // ========== 最终章 ==========
+  final_chapter: {
+    title: '百年沧桑',
+    location: '朱雀星',
+    chapter: '终章 · 寻道',
+    text: `时光飞逝，百年匆匆而过。
+
+百年间，你经历了太多太多。
+
+你回过青牛镇，但那里已经物是人非。你的父母，早已去世多年。你在他们的坟前坐了三天三夜，然后离去。
+
+你突破了结丹，达到了元婴。
+
+你经历了第二次天劫，第三次天劫……
+
+你见过了太多的生离死别，见过了太多的世事无常。
+
+你的修为越来越高，你的道心越来越坚定。但你也越来越孤独。
+
+曾经的朋友，一个个离你而去。林峰、柳如烟……他们或陨落，或飞升，或杳无音信。
+
+到最后，只剩下你一个人。
+
+这日，你站在一座山巅，望着远方的云海。
+
+你的修为，已经达到了化神巅峰。距离婴变，只有一步之遥。
+
+但你知道，这一步，很难。
+
+婴变，需要对大道有更深的感悟。需要明心见性，需要知道自己的道是什么。
+
+"我的道……是什么呢？"你喃喃道。
+
+你想起了这百年来的经历，想起了那些人，那些事。
+
+生、死、轮回、因果、岁月、真假、杀戮……
+
+你忽然笑了。
+
+"原来如此……"
+
+"我的道，就是……"
+
+你站起身来，眼中闪过一道精光。
+
+婴变的契机，到了。`,
+    choices: [
+      { text: '突破婴变，继续前行', desc: '我的道，在远方', next: 'yingbian_choice', effects: { realm: 3, concept: { samsara: 10, time: 10 } } },
+      { text: '停下脚步，回顾一生', desc: '走了这么久，也该歇歇了', next: 'look_back', effects: { daoxin: 5, concept: { time: 10, karma: 5 } } },
+    ]
+  },
+
+  yingbian_choice: {
+    title: '婴变之劫',
+    location: '山巅',
+    chapter: '终章 · 寻道',
+    text: `你决定突破婴变。
+
+婴变之劫，比结丹之劫强了何止百倍。
+
+天空中，乌云汇聚，电闪雷鸣。这一次的天劫，比以往任何一次都要恐怖。
+
+但你很平静。
+
+你站在山巅，负手而立，望着天空。
+
+"来吧。"你淡淡道。
+
+轰——！！
+
+第一道天雷落下！
+
+你不闪不避，任由天雷劈在身上。
+
+百年修炼，百年磨砺。你的身体，你的道心，都已经达到了一个极高的境界。
+
+天雷，已经伤不到你了。
+
+一道、两道、三道……
+
+九九八十一道天雷，你全部硬扛了下来。
+
+当天劫散去的时候，你站在山巅，浑身散发着淡淡的金光。
+
+婴变……成功了。
+
+但你没有喜悦。
+
+因为你知道，婴变之后，还有问鼎。问鼎之后，还有飞升。
+
+飞升之后呢？仙界之上，还有更高的境界吗？
+
+修仙一途，何时是尽头？
+
+"也许……永远没有尽头。"你喃喃道。
+
+"但那又如何？"
+
+"只要我还在走，只要我的道还在前方……"
+
+"那就够了。"
+
+你闭上眼，感受着体内澎湃的力量。
+
+是时候了。
+
+该做出最终的选择了。`,
+    choices: [
+      { text: '飞升仙界，追求更高的大道', desc: '我的征途，是星辰大海', next: 'ending_ascend', effects: { ending: 'ascend' } },
+      { text: '留在凡间，守护这片土地', desc: '能力越大，责任越大', next: 'ending_heritage', effects: { ending: 'heritage' } },
+      { text: '身化大道，与天地同存', desc: '我即天地，天地即我', next: 'ending_huadao', effects: { ending: 'huadao' } },
+      { text: '入轮回，再寻道', desc: '这一世，已经够了', next: 'ending_samsara', effects: { ending: 'samsara' } },
+    ]
+  },
+
+  look_back: {
+    title: '回顾',
+    location: '山巅',
+    chapter: '终章 · 寻道',
+    text: `你坐在山巅的一块石头上，开始回顾自己的一生。
+
+从青牛镇上的那个少年，到今天的化神巅峰修士。
+
+这一路走来，你经历了太多。
+
+你杀过人，也救过人。你做过错事，也做过对的事。你有过朋友，也有过敌人。你得到过很多，也失去过很多。
+
+"如果……当年我选择了另一条路，会怎么样呢？"你喃喃道。
+
+如果当年你没有修仙，现在会是什么样子？
+
+如果当年你加入了宗门，现在会是什么样子？
+
+如果当年你没有得到天逆珠，现在会是什么样子？
+
+……
+
+没有如果。
+
+人生就是这样，每一个选择，都决定了不同的道路。而你，只能沿着自己选择的路，一直走下去。
+
+"不过……"你笑了笑，"我不后悔。"
+
+"这一路走来，虽然辛苦，但我走得很踏实。"
+
+"我的道心，从未动摇过。"
+
+你站起身来，望着远方。
+
+"是时候了。"
+
+"该做出最后的选择了。"`,
+    choices: [
+      { text: '飞升仙界，追求更高的大道', desc: '我的征途，是星辰大海', next: 'ending_ascend', effects: { ending: 'ascend' } },
+      { text: '归隐山林，了此残生', desc: '累了，想歇歇了', next: 'ending_recluse', effects: { ending: 'recluse' } },
+      { text: '传承道统，留下道统', desc: '将我的道，传下去', next: 'ending_heritage', effects: { ending: 'heritage' } },
+      { text: '无敌于世，寂寞如雪', desc: '天下之大，再无敌手', next: 'ending_lonely', effects: { ending: 'lonely' } },
+    ]
+  },
+
+  // ========== 结局节点 ==========
+  ending_ascend: {
+    title: '飞升成仙',
+    isEnding: true,
+    endingId: 'ascend',
+    text: `你选择了飞升。
+
+这一日，天地变色，异象频生。
+
+一道金色的光柱从天而降，笼罩着你的身体。
+
+你感到自己的身体在变得轻盈，在缓缓上升。
+
+你低下头，最后看了一眼这片土地。
+
+朱雀星，东域，青牛镇……
+
+这里有你的回忆，有你的过去。
+
+"再见了。"你轻声道。
+
+光芒大盛。
+
+你的身影，渐渐消失在光柱之中。
+
+……
+
+仙界。
+
+你睁开眼睛，发现自己站在一片云海之上。远处，仙山楼阁，仙鹤飞舞，一派仙境景象。
+
+"这就是……仙界吗……"你喃喃道。
+
+你深吸一口气，空气中充满了浓郁的仙气，比凡间的灵气浓郁了何止百倍。
+
+"果然……仙界才是真正的修仙之地。"
+
+你笑了。
+
+但你知道，这不是终点。
+
+仙界之上，还有更高的境界。
+
+你的道，还在前方。
+
+你迈开脚步，向前走去。
+
+新的旅程，开始了。
+
+——飞升成仙·结局——`,
+    choices: [
+      { text: '重入轮回，再寻大道', desc: '一世又一世，道心永不灭', next: 'reincarnate', effects: { cycle: true } },
+      { text: '返回标题', desc: '', next: 'title', effects: {} },
+    ]
+  },
+
+  ending_fall: {
+    title: '陨落道消',
+    isEnding: true,
+    endingId: 'fall',
+    text: `你死了。
+
+你的身体从空中坠落，摔在了一片乱石滩上。
+
+鲜血染红了地面。
+
+你的意识在渐渐模糊。
+
+"就这样……结束了吗……"你喃喃道，"我王林……就这样死了……"
+
+你不甘心。
+
+真的不甘心。
+
+你还有很多事情没有做，还有很多地方没有去，还有很多大道没有悟。
+
+但你已经没有机会了。
+
+死亡，是公平的。
+
+无论是凡人还是修士，最终都要面对死亡。
+
+"如果……有来生……"
+
+"我一定……要逆天改命……"
+
+你的眼睛，缓缓闭上了。
+
+风吹过，带着一丝悲凉。
+
+一代修士，就此陨落。
+
+——陨落道消·结局——`,
+    choices: [
+      { text: '重入轮回，再踏仙途', desc: '前世已矣，来世可期', next: 'reincarnate', effects: { cycle: true } },
+      { text: '返回标题', desc: '', next: 'title', effects: {} },
+    ]
+  },
+
+  ending_demon: {
+    title: '入魔沉沦',
+    isEnding: true,
+    endingId: 'demon',
+    text: `你入魔了。
+
+当你再次睁开眼睛的时候，你的瞳孔已经变成了血红色。
+
+你的身上，散发着滔天的魔气。
+
+"力量……这就是力量的感觉吗……"你喃喃道，声音沙哑而冰冷。
+
+你笑了，笑得很疯狂。
+
+"哈哈哈……力量……我要更多的力量……"
+
+你抬起手，魔气涌动，方圆百里之内的生灵，全部被你吸成了干尸。
+
+他们的精血，他们的灵魂，都成了你力量的养分。
+
+"不够……还不够……"
+
+你疯狂地杀戮，疯狂地吞噬。
+
+你的修为在飞速提升，但你的人性，也在一点点消失。
+
+到最后，你已经不再是王林了。
+
+你只是一个……只为杀戮和吞噬而存在的怪物。
+
+修仙界，多了一个大魔头。
+
+无数修士死在你的手中，无数宗门被你灭门。
+
+人人得而诛之。
+
+但没有人能杀得了你。
+
+直到有一天，你站在尸山血海之上，忽然停下了。
+
+"我……是谁……"你喃喃道。
+
+你想不起来了。
+
+你只记得，你要杀戮，你要吞噬。
+
+至于为什么……
+
+你已经忘了。
+
+——入魔沉沦·结局——`,
+    choices: [
+      { text: '重入轮回，找回本心', desc: '魔由心生，心由轮回', next: 'reincarnate', effects: { cycle: true } },
+      { text: '返回标题', desc: '', next: 'title', effects: {} },
+    ]
+  },
+
+  ending_recluse: {
+    title: '归隐山林',
+    isEnding: true,
+    endingId: 'recluse',
+    text: `你选择了归隐。
+
+你在一座深山中建了一间小屋，过起了日出而作、日落而息的生活。
+
+你不再修炼，不再争斗。你种了一片菜地，养了几只鸡，像一个普通的农夫一样生活。
+
+日子平淡而安宁。
+
+偶尔，你会坐在门前的石头上，望着远方的云海，想起那些过去的事情。
+
+那些人，那些事，那些刀光剑影，那些爱恨情仇……
+
+都已经成了过眼云烟。
+
+"这样……也挺好的。"你喃喃道。
+
+春去秋来，岁月如梭。
+
+你的头发渐渐白了，你的脸上渐渐有了皱纹。
+
+你不再是那个叱咤风云的修士，你只是一个普通的老人。
+
+但你很满足。
+
+这一生，你轰轰烈烈过，也平平淡淡过。
+
+够了。
+
+这日，你坐在门前的摇椅上，晒着太阳，缓缓闭上了眼睛。
+
+嘴角，带着一丝微笑。
+
+——归隐山林·结局——`,
+    choices: [
+      { text: '重入轮回，再寻道心', desc: '归隐不是终点，只是歇息', next: 'reincarnate', effects: { cycle: true } },
+      { text: '返回标题', desc: '', next: 'title', effects: {} },
+    ]
+  },
+
+  ending_heritage: {
+    title: '传承道统',
+    isEnding: true,
+    endingId: 'heritage',
+    text: `你选择了传承。
+
+你开宗立派，广收弟子，将你的道统传了下去。
+
+你的宗门，名叫"逆仙宗"。取"逆天而行，寻仙问道"之意。
+
+你将自己毕生所学，都传授给了弟子们。
+
+你告诉他们，修仙一途，艰难险阻，但只要道心坚定，就一定能走出一条属于自己的路。
+
+你告诉他们，力量不是目的，守护才是。
+
+你告诉他们，要心存善念，要敬畏生命。
+
+……
+
+很多年后，你坐在宗门的最高处，看着下方来来往往的弟子们。
+
+他们有的在修炼，有的在切磋，有的在讨论道法。
+
+一张张年轻的面孔，充满了朝气和希望。
+
+"真好……"你喃喃道，"我的道，有人继承了。"
+
+你闭上了眼睛。
+
+你的身体，渐渐变得透明，化作点点金光，消散在天地之间。
+
+你没有死。
+
+你的道，你的精神，已经融入了每一个弟子的心中。
+
+只要逆仙宗还在，你的道，就永远不会消失。
+
+——传承道统·结局——`,
+    choices: [
+      { text: '重入轮回，再传大道', desc: '道统不绝，轮回不止', next: 'reincarnate', effects: { cycle: true } },
+      { text: '返回标题', desc: '', next: 'title', effects: {} },
+    ]
+  },
+
+  ending_huadao: {
+    title: '化道天地',
+    isEnding: true,
+    endingId: 'huadao',
+    text: `你选择了化道。
+
+这一日，你站在天地之间，张开双臂。
+
+"天地有道，我亦有道。"
+
+"我之道，便是天地之道。"
+
+你的身体，开始发光。
+
+一点一点地，你的身体化作了光，融入了天地之间。
+
+你的意识，扩散开来。
+
+你"看到"了——
+
+你看到了山川河流，看到了日月星辰，看到了芸芸众生。
+
+你感受到了风的呼吸，雨的哭泣，雷的怒吼，雪的轻舞。
+
+你与天地，融为了一体。
+
+从此以后，你就是天地，天地就是你。
+
+风吹过，那是你的呼吸。
+
+雨落下，那是你的眼泪。
+
+阳光普照，那是你的微笑。
+
+你无处不在，你无时不在。
+
+你没有死。
+
+你只是……换了一种方式存在。
+
+——化道天地·结局——`,
+    choices: [
+      { text: '重入轮回，再化万物', desc: '道生一，一生二，二生三，三生万物', next: 'reincarnate', effects: { cycle: true } },
+      { text: '返回标题', desc: '', next: 'title', effects: {} },
+    ]
+  },
+
+  ending_samsara: {
+    title: '轮回重生',
+    isEnding: true,
+    endingId: 'samsara',
+    text: `你选择了轮回。
+
+你站在奈何桥上，望着桥下的忘川水。
+
+"孟婆，"你对身边的老妇人说，"我可以不喝孟婆汤吗？"
+
+孟婆抬起头，看了你一眼。
+
+"不喝孟婆汤，你就会带着前世的记忆入轮回。"她缓缓道，"那样……会很痛苦。"
+
+"我知道。"你笑了笑，"但我想记住。记住这一世的人，这一世的事，这一世的道。"
+
+"下一世，我想带着这些记忆，继续走下去。"
+
+孟婆沉默了很久。
+
+"你是第一个……主动要求不喝孟婆汤的人。"她叹了口气，"罢了，罢了……既然你执意如此，那就去吧。"
+
+"但你要记住——"
+
+"带着记忆入轮回，是要付出代价的。"
+
+"每一世，你的道心都会受到磨砺。或痛苦，或悲伤，或愤怒……"
+
+"你确定吗？"
+
+你点了点头。
+
+"我确定。"
+
+"好。"孟婆挥了挥手，"去吧。"
+
+你向前走去，跳入了轮回之中。
+
+下一世，你会是谁？
+
+你不知道。
+
+但你知道——
+
+无论你是谁，无论你在哪里，你的道，永远都在。
+
+——轮回重生·结局——`,
+    choices: [
+      { text: '开启新的轮回', desc: '前世已矣，来世可期', next: 'reincarnate', effects: { cycle: true } },
+      { text: '返回标题', desc: '', next: 'title', effects: {} },
+    ]
+  },
+
+  ending_lonely: {
+    title: '无敌寂寞',
+    isEnding: true,
+    endingId: 'lonely',
+    text: `你天下无敌了。
+
+整个朱雀星，没有人是你的对手。
+
+你站在世界的最高处，俯瞰着众生。
+
+但你并不快乐。
+
+因为你太孤独了。
+
+曾经的朋友，都已经不在了。曾经的敌人，也都已经死了。
+
+你想找一个人说说话，都找不到。
+
+你想找一个对手，也找不到。
+
+无敌，是多么的寂寞。
+
+这日，你坐在山巅，喝着酒。
+
+酒是好酒，但你喝不出味道。
+
+"高处不胜寒啊……"你喃喃道。
+
+你想起了很多年前，在青牛镇上的日子。
+
+那时候，你只是一个普通的少年。你有父母，有朋友，有喜欢的人。
+
+那时候的日子，虽然平淡，但很快乐。
+
+"如果……可以重来的话……"你笑了笑，"我也许……会选择另一条路吧。"
+
+风吹过，带着一丝凉意。
+
+你举起酒壶，对着月亮。
+
+"敬往事。"
+
+"敬故人。"
+
+"敬……这无敌的寂寞。"
+
+你一饮而尽。
+
+然后，你站起身来，纵身一跃，跳入了云海之中。
+
+没有人知道你去了哪里。
+
+有人说，你飞升了。
+
+有人说，你归隐了。
+
+也有人说，你还在这个世界的某个角落，默默地看着这片土地。
+
+真相是什么，已经不重要了。
+
+重要的是——
+
+你曾经来过。
+
+——无敌寂寞·结局——`,
+    choices: [
+      { text: '重入轮回，不再寂寞', desc: '一世孤独，一世繁华', next: 'reincarnate', effects: { cycle: true } },
+      { text: '返回标题', desc: '', next: 'title', effects: {} },
+    ]
+  },
+
+  // ========== 其他节点（补全剧情线） ==========
+  stay_home: {
+    title: '凡心',
+    location: '青牛镇 · 王家',
+    chapter: '第一章 · 凡尘',
+    text: `你最终选择了留下。
+
+你读书、考学、娶妻、生子。父亲去世后，你继承了家业，成了镇上的新财主。
+
+日子一天天过去，你从少年变成青年，再变成中年、老年。
+
+偶尔，你会想起那个老乞丐，想起那颗珠子，想起自己曾经有过一个修仙的机会。
+
+"如果当年我选择了修仙，现在会是什么样子？"你常常这样问自己。
+
+但人生没有如果。
+
+你活到了八十岁，无疾而终。
+
+临死前，你看着围在床前的子孙们，脸上露出了微笑。
+
+这一生，虽然平淡，但也圆满。
+
+……
+
+恍惚间，你似乎看到了一颗灰扑扑的珠子，在黑暗中微微发光。
+
+"下一世……你还会选择这条路吗？"一个苍老的声音在你耳边响起。
+
+你想回答，却发不出声音。
+
+意识渐渐沉入黑暗。`,
+    choices: [
+      { text: '【结局】凡俗终老', desc: '平平淡淡，也是一种道', next: 'ending_recluse', effects: { ending: 'recluse' } },
+    ]
+  },
+
+  hesitate: {
+    title: '犹豫',
+    location: '青牛镇 · 老槐树下',
+    chapter: '第一章 · 凡尘',
+    text: `"我……我想再考虑一下。"你低下头，不敢看青袍男子的眼睛。
+
+青袍男子皱了皱眉。
+
+"考虑？修仙之路，不进则退。你连这点决心都没有，还修什么仙？"
+
+他挥了挥手。
+
+"罢了，你走吧。"
+
+你脸涨得通红，想说什么，但最终还是什么都没说，转身离开了。
+
+回到家，你越想越后悔。
+
+"我刚才为什么要犹豫？"你狠狠地捶了一下桌子，"五灵根又怎么样？总比没有机会强啊！"
+
+但世上没有后悔药。
+
+青袍男子已经走了，青云宗的人也走了。
+
+你错过了这次机会。
+
+"难道……我这辈子就只能做个凡人了吗？"你不甘心。
+
+你握紧了拳头。
+
+"不！我不甘心！"
+
+"没有宗门，我就自己修炼！"
+
+"散修……就散修！"`,
+    choices: [
+      { text: '开始散修之路', desc: '没有宗门，一样可以修仙', next: 'rogue_start', effects: { daoxin: 3, achievement: 'rogue_cultivator', achievement: 'first_step' } },
+    ]
+  },
+
+  bookshop: {
+    title: '书海寻踪',
+    location: '青牛镇 · 书铺',
+    chapter: '第一章 · 凡尘',
+    text: `你来到镇上的书铺，开始翻阅各种杂书。
+
+大部分书都是普通的志怪小说，荒诞不经，没什么价值。
+
+但你在角落里找到了一本残破的古书——《吐纳术》。
+
+这本书看起来很旧，封皮都快掉了。你翻开一看，里面记载着一种呼吸吐纳的方法，说是可以强身健体，延年益寿。
+
+"这是……修炼功法？"你心中激动。
+
+虽然只是最基础的吐纳术，但对于你来说，已经是天大的机缘了。
+
+"老板，这本书多少钱？"
+
+书铺老板看了一眼，撇了撇嘴。
+
+"那本破书啊？给三文钱拿走吧。"
+
+你立刻买下了这本书，兴冲冲地回了家。
+
+当天晚上，你就按照书上的方法开始修炼。
+
+虽然进展缓慢，但你能感觉到，自己的身体在一点点变强。
+
+"这就是……修仙的感觉吗……"你喃喃道。
+
+你的眼中，闪烁着光芒。`,
+    choices: [
+      { text: '继续修炼，等待机会', desc: '是金子总会发光的', next: 'rogue_start', effects: { realm: 0.05, daoxin: 2, achievement: 'first_step' } },
+    ]
+  },
+
+  mountain_hermit: {
+    title: '山中隐士',
+    location: '青牛镇外 · 大山',
+    chapter: '第一章 · 凡尘',
+    text: `你背着行囊，走进了镇外的大山。
+
+传说山中有隐士，也许能遇到仙人。
+
+山里很危险，有毒虫猛兽，还有瘴气。你走了三天三夜，什么都没遇到，反而差点迷路。
+
+就在你快要放弃的时候，你在一个山洞里发现了一具骸骨。
+
+骸骨旁边，放着一个布包。
+
+你打开布包，里面有一本功法、一把短剑、还有几瓶丹药。
+
+"这是……"你激动得手都在抖。
+
+功法名叫《基础吐纳诀》，是最基础的修炼功法。但对于你来说，已经足够了。
+
+"前辈……"你对着骸骨磕了三个头，"晚辈王林，今日得前辈传承，定当铭记于心。"
+
+你将骸骨埋葬了，然后带着功法和短剑下了山。
+
+虽然没有遇到隐士，但你得到了修炼的功法。
+
+这，就是你的机缘。`,
+    choices: [
+      { text: '开始修炼', desc: '修仙之路，从今天开始', next: 'rogue_start', effects: { realm: 0.08, item: 'guyi_sword', daoxin: 2, achievement: 'first_step' } },
+    ]
+  },
+
+  // 更多节点...
+  leave_sect: {
+    title: '离开青云',
+    location: '青云山外',
+    chapter: '第三章 · 筑基',
+    text: `你找了个借口，离开了青云宗。
+
+虽然有些不舍，但你知道，留下来只会有危险。
+
+宗主的那双眼睛，你永远也忘不了。
+
+"总有一天，我会回来的。"你回头看了一眼青云山，"到那个时候，就不是现在这个样子了。"
+
+你转身离去，踏上了散修之路。
+
+没有宗门庇护，没有资源供给。一切都要靠自己。
+
+但你不后悔。
+
+至少，你是自由的。
+
+而且，你有天逆珠，有古神玉简。
+
+你的未来，不可限量。`,
+    choices: [
+      { text: '前往落云坊市', desc: '散修的聚集地', next: 'rogue_journey', effects: { daoxin: 2, concept: { truth: 3 } } },
+    ]
+  },
+
+  stay_sect_careful: {
+    title: '如履薄冰',
+    location: '青云宗',
+    chapter: '第三章 · 筑基',
+    text: `你选择了留下，但你变得更加小心了。
+
+你很少出门，大部分时间都在洞府里修炼。你不与任何人深交，也不参与任何宗门纷争。
+
+你就像一个透明人一样，默默地提升着自己的实力。
+
+日子一天天过去，你的修为在稳步提升。
+
+但你知道，这只是暂时的平静。
+
+宗主不会放过你的。他只是还没找到合适的机会。
+
+"在那之前，我必须变得足够强。"你对自己说。
+
+终于，在一个月黑风高的夜晚，宗主出手了。
+
+他半夜闯入你的洞府，想要杀人夺宝。
+
+但你早有防备。
+
+你催动天逆珠，打开了一条空间裂缝，跳了进去。
+
+"想跑？"宗主怒吼着追了上来。
+
+但空间裂缝转瞬即逝。
+
+你被传送到了一个陌生的地方。
+
+虽然狼狈，但你活下来了。`,
+    choices: [
+      { text: '查看周围环境', desc: '不知道被传送到了哪里', next: 'teleport_away', effects: { daoxin: 3, concept: { samsara: 5, death: 3 } } },
+    ]
+  },
+
+  teleport_away: {
+    title: '他乡',
+    location: '未知之地',
+    chapter: '第三章 · 筑基',
+    text: `你昏迷了三天三夜。
+
+当你醒来的时候，发现自己躺在一片陌生的山林中。
+
+"这里是……"你挣扎着坐起来，环顾四周。
+
+你从未见过这个地方。
+
+天逆珠将你传送到了这里——一个你完全陌生的地方。
+
+"也好。"你苦笑了一下，"至少……暂时安全了。"
+
+你检查了一下自己的身体。
+
+伤势很重，但没有生命危险。天逆珠在你昏迷的时候，已经用泉水帮你治疗了大部分伤势。
+
+"谢谢你。"你摸了摸怀里的珠子。
+
+你站起身来，辨别了一下方向，然后向前走去。
+
+不管这里是哪里，路，还是要继续走的。
+
+你的修仙之路，还很长。`,
+    choices: [
+      { text: '向前走，寻找人烟', desc: '先搞清楚自己在哪里', next: 'rogue_journey', effects: { realm: 0.1, daoxin: 2, concept: { samsara: 3 } } },
+    ]
+  },
+
+  escape_sect: {
+    title: '叛逃',
+    location: '青云山外',
+    chapter: '第二章 · 宗门',
+    text: `你知道自己暴露了，不敢久留，连夜逃离了青云宗。
+
+身后，有追兵。
+
+"站住！"
+
+"王林，你敢背叛宗门？！"
+
+你头也不回，拼命逃跑。
+
+你知道，被抓回去的下场是什么。
+
+天逆珠的秘密，绝对不能暴露。
+
+你一路向东，逃了三天三夜，终于甩掉了追兵。
+
+你瘫坐在地上，大口喘着气。
+
+"安全了……"
+
+你回头看了一眼青云山的方向，心中五味杂陈。
+
+你在青云宗待了好几年，有过朋友，有过敌人，有过欢乐，也有过痛苦。
+
+现在，一切都结束了。
+
+"从今以后，我就是散修王林。"你握紧了拳头，"没有宗门，我一样能走出一条路来！"`,
+    choices: [
+      { text: '前往落云坊市', desc: '散修的聚集地', next: 'rogue_journey', effects: { daoxin: 3, concept: { death: 5, truth: 3 } } },
+    ]
+  },
+
+  escape_sect_2: {
+    title: '逃亡',
+    location: '青云山外',
+    chapter: '第三章 · 筑基',
+    text: `你抱着林峰的尸体，逃出了青云宗。
+
+你的心，在滴血。
+
+林峰……是你在这个世界上最好的朋友。
+
+他为了救你，死了。
+
+"林峰……"你哽咽着，"你放心，我一定会为你报仇的。"
+
+你将林峰埋葬在了一座风景秀丽的山上。
+
+"等我变强了，我会回来的。"你对着墓碑说，"到那个时候，我会让宗主血债血偿。"
+
+你站起身来，擦干了眼泪。
+
+你的眼中，只剩下冰冷的杀意。
+
+从今天起，你不再是那个天真的少年了。
+
+你的手上，沾满了血。你的心里，充满了恨。
+
+你的道，染上了杀戮的色彩。
+
+"宗主……你等着……"
+
+"我王林，对天发誓——"
+
+"此仇不报，誓不为人！"`,
+    choices: [
+      { text: '踏上复仇之路', desc: '变强，然后复仇', next: 'rogue_journey', effects: { daoxin: -5, concept: { slaughter: 10, death: 10, karma: 5 }, achievement: 'first_death' } },
+    ]
+  },
+
+  escape_mountain: {
+    title: '逃之夭夭',
+    location: '青云宗 · 后山',
+    chapter: '第二章 · 宗门',
+    text: `你带着战利品，匆匆离开了后山。
+
+回到石屋，你关上门，心跳得厉害。
+
+"杀人了……我杀人了……"你喃喃道。
+
+你以为你会害怕，但奇怪的是，你的心很平静。
+
+"在修仙界，不是你死，就是我亡。"你对自己说，"我不杀他们，他们就会杀我。"
+
+你打开战利品，仔细清点。
+
+几块灵石、一张符箓、几株灵草……还有一本残破的功法。
+
+"不错……"你点了点头。
+
+有了这些资源，你的修炼速度会更快。
+
+但你也知道，这件事不会就这么算了。张虎醒过来后，一定会找你报仇的。
+
+"必须尽快提升实力。"你眼中闪过一丝厉色，"在他来找我之前，我要变得更强。"`,
+    choices: [
+      { text: '闭关修炼', desc: '提升实力才是王道', next: 'continue_cultivate', effects: { realm: 0.15, daoxin: -3, concept: { slaughter: 5 } } },
+    ]
+  },
+
+  seek_resources: {
+    title: '寻求资源',
+    location: '青云宗',
+    chapter: '第二章 · 宗门',
+    text: `你决定想办法弄到更多资源。
+
+光靠宗门每月发放的那点资源，根本不够用。
+
+你听说后山有妖兽出没，妖兽的内丹、皮毛都很值钱。很多弟子都会去后山猎杀妖兽，换取资源。
+
+"猎杀妖兽吗……"你沉吟道。
+
+这是一个办法，但也很危险。妖兽可不是那么好对付的，每年都有弟子死在妖兽口中。
+
+但你没有别的选择。
+
+富贵险中求。`,
+    choices: [
+      { text: '去后山猎杀妖兽', desc: '富贵险中求', next: 'hunt_monster', effects: { concept: { slaughter: 5, death: 3 }, daoxin: 1 } },
+      { text: '做任务赚取贡献点', desc: '虽然慢，但安全', next: 'do_missions', effects: { daoxin: 2, concept: { karma: 3 } } },
+    ]
+  },
+
+  hunt_monster: {
+    title: '猎杀妖兽',
+    location: '青云宗 · 后山',
+    chapter: '第二章 · 宗门',
+    text: `你来到后山，开始寻找妖兽。
+
+后山很大，树木茂密，遮天蔽日。你小心翼翼地前行，搜寻着妖兽的踪迹。
+
+忽然，你听到了一阵低沉的咆哮声。
+
+"找到了！"
+
+你循声走去，只见一头赤焰狼正在啃食一只野兔。这头赤焰狼有凝气七层的实力，不太好对付。
+
+你屏住呼吸，悄悄绕到赤焰狼的身后，准备偷袭。
+
+就在你即将出手的时候，赤焰狼突然转过身，恶狠狠地盯着你！
+
+"被发现了！"
+
+赤焰狼咆哮一声，向你扑来！
+
+你侧身躲开，同时一拳砸向赤焰狼的脑袋。
+
+一人一狼战在了一起。
+
+战斗很激烈。你受了不少伤，但最终还是杀死了赤焰狼。
+
+"呼……呼……"你喘着粗气，浑身是血。
+
+你看着赤焰狼的尸体，脸上露出了笑容。
+
+"第一头妖兽。"
+
+你将赤焰狼的内丹取了出来，然后将尸体收了起来。
+
+这些，都是资源。`,
+    choices: [
+      { text: '继续猎杀，多赚点资源', desc: '趁热打铁', next: 'hunt_more', effects: { realm: 0.15, concept: { slaughter: 5, death: 3 }, daoxin: -1 } },
+      { text: '回去吧，见好就收', desc: '太贪心会出事的', next: 'sect_competition', effects: { daoxin: 2, realm: 0.08 } },
+    ]
+  },
+
+  hunt_more: {
+    title: '贪多嚼不烂',
+    location: '青云宗 · 后山深处',
+    chapter: '第二章 · 宗门',
+    text: `你继续深入后山，想要猎杀更多妖兽。
+
+然而，你很快就遇到了麻烦。
+
+你误入了一头筑基期妖兽的领地。
+
+那是一头黑风豹，体型巨大，浑身漆黑，速度快如闪电。
+
+"筑基期妖兽……"你脸色大变。
+
+你根本不是它的对手！
+
+跑！
+
+你转身就跑。
+
+黑风豹在后面紧追不舍。
+
+你拼命逃跑，好几次都差点被追上。你用尽了浑身解数，才终于甩掉了黑风豹。
+
+你瘫坐在地上，大口喘着气，浑身是伤。
+
+"好险……差点就没命了……"你心有余悸。
+
+这次虽然侥幸逃了一命，但你也受了重伤。
+
+"看来……太贪心果然不是什么好事。"
+
+你一瘸一拐地回了宗门。
+
+经此一事，你明白了一个道理——
+
+量力而行，见好就收。`,
+    choices: [
+      { text: '养伤，准备外门大比', desc: '不能再冒险了', next: 'sect_competition', effects: { realm: 0.1, daoxin: 3, concept: { death: 5, truth: 3 } } },
+    ]
+  },
+
+  do_missions: {
+    title: '任务堂',
+    location: '青云宗 · 任务堂',
+    chapter: '第二章 · 宗门',
+    text: `你来到任务堂，接了几个低阶任务。
+
+都是一些简单的任务——采药、送信、巡逻……虽然报酬不高，但胜在安全。
+
+你每天做完任务就回去修炼，日子过得平淡但充实。
+
+渐渐地，你攒了不少贡献点。你用贡献点兑换了一些丹药和灵石，修炼速度也快了不少。
+
+这日，你正在做巡逻任务，忽然听到一阵呼救声。
+
+你循声跑去，只见一个女弟子被一头妖兽袭击，险象环生。
+
+那个女弟子你认识，是外门的苏婉儿，长得很漂亮，很多男弟子都喜欢她。
+
+怎么办？`,
+    choices: [
+      { text: '出手相救', desc: '见死不救，非大丈夫所为', next: 'save_su', effects: { daoxin: 3, concept: { life: 5, karma: 5 }, achievement: 'kind_choice' } },
+      { text: '悄悄离开，多一事不如少一事', desc: '多管闲事容易惹麻烦', next: 'ignore_su', effects: { daoxin: -2, concept: { truth: 2 } } },
+    ]
+  },
+
+  save_su: {
+    title: '英雄救美',
+    location: '青云宗 · 后山',
+    chapter: '第二章 · 宗门',
+    text: `你冲了上去，与妖兽战在了一起。
+
+妖兽是一头凝气八层的青纹虎，实力不弱。但你这些天修炼刻苦，加上战斗经验丰富，最终还是斩杀了妖兽。
+
+"多谢王师兄救命之恩！"苏婉儿对你盈盈一拜，脸上带着红晕。
+
+"举手之劳，不足挂齿。"你笑了笑。
+
+"王师兄，你受伤了！"苏婉儿看到你手臂上的伤口，惊呼道，"快，我这里有疗伤药。"
+
+她拿出一瓶药膏，小心翼翼地帮你涂抹。
+
+你看着她认真的样子，心中微微一动。
+
+苏婉儿长得确实很漂亮，而且性格温柔，是很多男弟子心目中的女神。
+
+"王师兄，你人真好。"苏婉儿抬起头，看着你，眼中带着一丝异样的光芒。
+
+你有些不自在地移开了目光。
+
+"没什么……"`,
+    choices: [
+      { text: '与苏婉儿结交', desc: '多个朋友多条路', next: 'befriend_su', effects: { concept: { karma: 5 }, daoxin: 1 } },
+      { text: '保持距离，专心修炼', desc: '儿女情长，影响修行', next: 'sect_competition', effects: { daoxin: 3, realm: 0.1 } },
+    ]
+  },
+
+  befriend_su: {
+    title: '情愫',
+    location: '青云宗',
+    chapter: '第二章 · 宗门',
+    text: `从那以后，你和苏婉儿的关系越来越近。
+
+她经常来找你，有时候给你带一些她亲手做的点心，有时候向你请教修炼上的问题。
+
+你也挺喜欢和她在一起的。她温柔、善良、善解人意，和她在一起的时候，你会觉得很放松。
+
+但你也知道，修仙路上，儿女情长是大忌。
+
+多少惊才绝艳之辈，就是因为过不了情关，最终止步不前。
+
+"王林，你在想什么？"苏婉儿歪着头，看着你。
+
+"没什么。"你笑了笑。
+
+你看着她的笑脸，心中暗暗叹了口气。
+
+也许……等筑基了再说吧。`,
+    choices: [
+      { text: '专心修炼，准备外门大比', desc: '筑基之后，再谈其他', next: 'sect_competition', effects: { realm: 0.1, daoxin: 1, concept: { karma: 3 } } },
+    ]
+  },
+
+  ignore_su: {
+    title: '擦肩而过',
+    location: '青云宗 · 后山',
+    chapter: '第二章 · 宗门',
+    text: `你犹豫了一下，最终还是选择了离开。
+
+多一事不如少一事。
+
+你悄悄退了回去，继续做自己的任务。
+
+但不知道为什么，你总是静不下心来。
+
+苏婉儿的呼救声，一直在你耳边回响。
+
+"我这样做……对吗？"你问自己。
+
+没有人回答。
+
+等你巡逻完回去的时候，听说苏婉儿被其他弟子救了，虽然受了点伤，但没有生命危险。
+
+你松了口气，但心中又有些不是滋味。
+
+"算了，不想了。"你摇了摇头，"专心修炼吧。"
+
+但你知道，你的道心，又蒙上了一层尘埃。`,
+    choices: [
+      { text: '继续做任务，攒贡献点', desc: '不想了，专心修炼', next: 'sect_competition', effects: { daoxin: -2, realm: 0.08, concept: { death: 2 } } },
+    ]
+  },
+
+  loot_girl: {
+    title: '趁火打劫',
+    location: '山林',
+    chapter: '第二章 · 散修',
+    text: `你躲在树后，等待着时机。
+
+赤焰狼一口咬断了少女的喉咙。少女挣扎了几下，便不动了。
+
+赤焰狼开始啃食少女的尸体。
+
+你等赤焰狼吃饱了，懒洋洋地趴在地上休息的时候，才悄悄走了出去。
+
+你从背后偷袭，一拳砸在赤焰狼的头上。
+
+赤焰狼猝不及防，被你打了个正着。它怒吼一声，转过身来和你拼命。
+
+但它刚吃饱，动作有些迟缓，而且刚才和少女战斗也消耗了不少体力。
+
+你费了九牛二虎之力，终于杀死了赤焰狼。
+
+你喘着粗气，走到少女的尸体旁边。
+
+她的眼睛还睁着，眼中满是惊恐和不甘。
+
+你搜了她的身，找到了一些灵石、丹药、还有一块粉色的手帕。
+
+"别怪我。"你喃喃道，"在这个世界，心软的人活不长。"
+
+你将东西收了起来，然后挖了个坑，把少女埋了。
+
+做完这一切，你继续赶路。
+
+但不知道为什么，少女那双死不瞑目的眼睛，一直在你脑海中挥之不去。`,
+    choices: [
+      { text: '不去想了，继续赶路', desc: '成大事者，不拘小节', next: 'rogue_journey', effects: { daoxin: -8, concept: { slaughter: 8, death: 8 }, item: 'qingxin_cao', achievement: 'cruel_choice' } },
+    ]
+  },
+
+  hide_from_wolf: {
+    title: '明哲保身',
+    location: '山林',
+    chapter: '第二章 · 散修',
+    text: `你躲在树后，不敢出声。
+
+赤焰狼的咆哮声和少女的惨叫声交织在一起，听得你心惊肉跳。
+
+过了一会儿，声音停了。
+
+你偷偷探出头，只见赤焰狼正在啃食少女的尸体。
+
+你捂住嘴，强忍着呕吐的冲动。
+
+太残忍了。
+
+但你不敢出去。你知道，你出去了也是送死。
+
+"我和她非亲非故，没必要为了她搭上自己的命。"你对自己说，"这就是修仙界，弱肉强食。"
+
+等赤焰狼吃饱了离开后，你才从树后走出来。
+
+少女的尸体已经被咬得面目全非，惨不忍睹。
+
+你别过头，不敢再看。
+
+你快步离开了这个地方。
+
+但少女的惨叫声，一直在你耳边回响。
+
+你的道心，又蒙上了一层阴影。`,
+    choices: [
+      { text: '继续赶路', desc: '离开这个鬼地方', next: 'rogue_journey', effects: { daoxin: -5, concept: { death: 5, truth: 3 } } },
+    ]
+  },
+
+  part_ways: {
+    title: '分道扬镳',
+    location: '岔路口',
+    chapter: '第二章 · 散修',
+    text: `"柳姑娘，我们就在这里分别吧。"你对柳如烟说。
+
+"啊？为什么啊？"柳如烟有些意外。
+
+"男女同行，多有不便。"你淡淡道，"而且，我们的目的地也不一样。"
+
+柳如烟看着你，眼中闪过一丝失落。
+
+"好吧……"她低下头，"那……你多保重。"
+
+"你也是。"
+
+你转身离去，没有回头。
+
+你不是不喜欢柳如烟。恰恰相反，你很喜欢她的开朗和善良。
+
+但你知道，修仙路上，儿女情长是大忌。
+
+而且，你身上有太多秘密。天逆珠、古神传承……这些都不能让任何人知道。
+
+和你在一起，只会给她带来危险。
+
+"对不起。"你在心里默默地说。
+
+你加快了脚步，向前走去。
+
+路，还是要一个人走的。`,
+    choices: [
+      { text: '继续赶路', desc: '一个人，也挺好', next: 'arrive_market', effects: { daoxin: 2, concept: { truth: 3, time: 2 } } },
+    ]
+  },
+
+  rent_cave: {
+    title: '安顿',
+    location: '落云坊',
+    chapter: '第三章 · 机缘',
+    text: `你在坊市附近租了一个洞府，暂时安顿下来。
+
+洞府不大，但胜在清静，适合修炼。
+
+你打算先在这里住一段时间，提升实力，然后再做打算。
+
+落云坊市很热闹，每天都有各种各样的消息传来。你也从这些消息中，了解到了很多修仙界的事情。
+
+比如，东边的天魔宗和青云宗打起来了。
+
+比如，西边的万兽山出了一头妖王。
+
+比如，南边的海域发现了一座上古遗迹……
+
+"上古遗迹？"你心中一动。
+
+这是一个机会。
+
+但上古遗迹危险重重，每年死在里面的修士不计其数。
+
+去还是不去？`,
+    choices: [
+      { text: '去看看，说不定有机缘', desc: '富贵险中求', next: 'ancient_ruins', effects: { concept: { samsara: 3 }, daoxin: 1 } },
+      { text: '不去，先提升实力再说', desc: '没有实力，去了也是送死', next: 'rogue_journey', effects: { daoxin: 2, realm: 0.2 } },
+    ]
+  },
+
+  buy_jade: {
+    title: '残破玉简',
+    location: '落云坊市',
+    chapter: '第三章 · 机缘',
+    text: `"老人家，这块玉简怎么卖？"你指着残破的玉简问道。
+
+老者睁开眼睛，看了你一眼。
+
+"这块玉简？"老者拿起玉简，"这是老夫偶然间得到的，里面的内容已经残缺不全了。你要是想要，十块下品灵石拿走。"
+
+十块下品灵石？不便宜。
+
+但你觉得这块玉简不简单。
+
+"好，我买了。"你取出十块灵石，递给老者。
+
+老者接过灵石，将玉简递给你。
+
+你拿着玉简，找了个僻静的地方，将神识探入其中。
+
+玉简里记载的是一种炼丹术——《百草丹经》。虽然大部分内容已经残缺了，但剩下的部分依然价值不菲。
+
+"炼丹术……"你喃喃道，"如果能学会炼丹，就不愁没有资源了。"
+
+炼丹师在修仙界可是很吃香的。`,
+    choices: [
+      { text: '学习炼丹术', desc: '多一门手艺，多一条路', next: 'learn_pill', effects: { concept: { truth: 5 }, item: 'danlu_pill', achievement: 'pill_master' } },
+    ]
+  },
+
+  buy_sword: {
+    title: '锈剑',
+    location: '落云坊市',
+    chapter: '第三章 · 机缘',
+    text: `"老人家，这把剑怎么卖？"你指着那把锈迹斑斑的铁剑问道。
+
+老者睁开眼睛，看了你一眼。
+
+"这把剑？"老者拿起剑，弹了弹剑刃，"这是老夫在一个古战场捡到的，看起来有些年头了，但锈成这样，估计也没什么用了。你要是想要，五块下品灵石拿走。"
+
+五块下品灵石，不算贵。
+
+你总觉得这把剑不简单。
+
+"好，我买了。"你取出五块灵石，递给老者。
+
+老者接过灵石，将剑递给你。
+
+你拿着剑，回到住处。
+
+你仔细端详着这把剑。剑身上锈迹斑斑，看不出本来的面目。但你能感觉到，剑里面似乎藏着什么。
+
+你试着用灵力擦拭剑身——
+
+嗡——
+
+剑身微微震动，表面的锈迹开始脱落。
+
+一把通体漆黑的古剑，出现在你的面前。
+
+剑身上刻着两个古字——
+
+"破虚。"`,
+    choices: [
+      { text: '好剑！', desc: '果然是宝物！', next: 'get_sword', effects: { item: 'pozu_jian', concept: { slaughter: 8 }, daoxin: 2 } },
+    ]
+  },
+
+  get_sword: {
+    title: '破虚剑',
+    location: '落云坊 · 客栈',
+    chapter: '第三章 · 机缘',
+    text: `你握着破虚剑，能感觉到剑身上传来的阵阵寒意。
+
+这把剑，很强。
+
+你试着挥了几下，剑随身动，如臂使指。
+
+"好剑！"你赞叹道。
+
+有了这把剑，你的战斗力至少提升了三成。
+
+"看来这次坊市之行，收获不小。"你笑了笑。
+
+破虚剑、古神玉简、天逆珠……
+
+你的机缘，一个接着一个。
+
+但你也知道，机缘越大，危险越大。
+
+这些宝物，不知道会给你带来多少麻烦。
+
+"走一步看一步吧。"你喃喃道。
+
+你将破虚剑收好，然后继续修炼。
+
+实力，才是根本。`,
+    choices: [
+      { text: '继续修炼', desc: '提升实力才是王道', next: 'god_cultivation_2', effects: { realm: 0.2, concept: { slaughter: 5 } } },
+    ]
+  },
+
+  learn_pill: {
+    title: '丹道',
+    location: '落云坊',
+    chapter: '第三章 · 机缘',
+    text: `你开始学习炼丹。
+
+炼丹可不是一件容易的事。需要对药材有深刻的了解，对火候有精准的控制，对灵力有细致的运用。
+
+你失败了很多次。
+
+一炉又一炉的丹药废掉了，浪费了不少药材。
+
+但你没有放弃。
+
+失败是成功之母。每一次失败，你都会总结经验，然后继续尝试。
+
+终于，在你第一百次尝试的时候，你成功炼出了第一炉丹药——聚气丹。
+
+虽然只是最低级的丹药，但你依然激动不已。
+
+"成功了……我终于成功了……"
+
+你拿着丹药，手都在抖。
+
+从今天起，你就是一名炼丹师了。
+
+虽然只是最低级的炼丹师，但这是一个好的开始。`,
+    choices: [
+      { text: '继续钻研丹道', desc: '炼丹师可是很吃香的', next: 'god_cultivation_2', effects: { realm: 0.15, concept: { truth: 5, life: 3 }, item: 'danlu_pill' } },
+    ]
+  },
+
+  study_god_art: {
+    title: '参悟',
+    location: '落云坊 · 客栈',
+    chapter: '第三章 · 机缘',
+    text: `你没有急着修炼，而是先仔细研究古神经。
+
+这部功法博大精深，蕴含着古神对大道的理解。
+
+你越研究，越是心惊。
+
+古神经不仅仅是一部修炼功法，它还包含了对生死、轮回、因果、岁月……各种大道意境的感悟。
+
+"原来如此……"你喃喃道，"修炼古神经，不仅仅是修炼肉身，更是修炼道心。"
+
+你沉浸在古神的智慧之中，如痴如醉。
+
+时间一天天过去。
+
+当你从参悟中醒来的时候，已经过去了三个月。
+
+你的修为没有提升太多，但你的道心，却变得无比坚定。
+
+你的意境感悟，也有了质的飞跃。
+
+"原来……这才是古神传承的真正价值。"你感慨道。
+
+力量只是表象，对大道的感悟，才是根本。`,
+    choices: [
+      { text: '开始修炼古神经', desc: '现在，可以开始了', next: 'cultivate_god', effects: { realm: 0.3, daoxin: 5, concept: { samsara: 8, time: 8, life: 5, death: 5 } } },
+    ]
+  },
+
+  stay_safe: {
+    title: '明哲保身',
+    location: '落云坊',
+    chapter: '第三章 · 机缘',
+    text: `你最终还是没有去遗迹。
+
+太危险了。
+
+你听说，去遗迹的修士，十个里面有八个都死在了里面。剩下的两个，也大多一无所获。
+
+"明哲保身，才是正道。"你对自己说。
+
+你继续在落云坊市修炼，日子过得平淡但充实。
+
+你的修为在稳步提升。
+
+一年后，你成功突破到了筑基期。
+
+虽然没有遗迹中的那些机缘，但你走得很稳。
+
+稳，有时候比快更重要。`,
+    choices: [
+      { text: '继续修炼，准备结丹', desc: '一步一个脚印', next: 'road_to_jiedan', effects: { realm: 1.2, daoxin: 3, concept: { karma: 3, time: 5 } } },
+    ]
+  },
+
+  outer_ruins: {
+    title: '外围探索',
+    location: '遗迹外围',
+    chapter: '第四章 · 遗迹',
+    text: `你没有急着深入，而是在外围小心探索。
+
+外围有不少宝物，但大多是些低阶物品，对你用处不大。
+
+不过，你也因此避开了很多危险。
+
+你看到不少修士因为抢宝而大打出手，死伤惨重。
+
+"人为财死，鸟为食亡……"你喃喃道。
+
+你继续向里面走，但始终保持着警惕。
+
+忽然，你听到了一阵琴声。
+
+琴声悠扬，如泣如诉，仿佛在诉说着一段悲伤的往事。
+
+"琴声？"你心中疑惑，"遗迹里怎么会有琴声？"
+
+你循声走去，来到了一座偏殿前。
+
+偏殿里，一个身穿白衣的女子正在弹琴。她背对着你，看不清面容，但身姿曼妙，如同仙子一般。
+
+你屏住呼吸，不敢出声。
+
+这个女子……是谁？
+
+她为什么会在这里？`,
+    choices: [
+      { text: '出声询问', desc: '姑娘，你是何人？', next: 'ask_woman', effects: { concept: { karma: 3 }, daoxin: 1 } },
+      { text: '悄悄离开', desc: '事出反常必有妖', next: 'leave_quietly', effects: { daoxin: 2, concept: { truth: 3 } } },
+    ]
+  },
+
+  ask_woman: {
+    title: '幻境',
+    location: '遗迹偏殿',
+    chapter: '第四章 · 遗迹',
+    text: `"姑娘，你是何人？为何会在这里？"你开口问道。
+
+女子停下了琴声，缓缓转过身来。
+
+当你看到她的脸时，你愣住了。
+
+她长得……和你记忆中的一个人一模一样。
+
+是你年少时喜欢的那个邻家女孩。
+
+"王林……你来了……"女子微笑着看着你，"我等你很久了……"
+
+你心跳加速。
+
+"你……你怎么会在这里？"
+
+"我一直在等你啊。"女子站起身，向你走来，"你不是一直喜欢我吗？跟我走吧……我们永远在一起……"
+
+她的声音温柔而魅惑，你几乎就要答应了。
+
+但就在这时，你的道心微微一动。
+
+不对！
+
+这是幻觉！
+
+"你不是她！"你猛地后退一步，大喝一声，"破！"
+
+你催动道心，眼前的幻象如同镜子一般碎裂。
+
+白衣女子消失了，偏殿也消失了。你发现自己站在一片空地上，面前只有一块石头。
+
+"好险……"你心有余悸，"差点就中招了。"
+
+这遗迹果然危险重重，连幻境都有。`,
+    choices: [
+      { text: '继续深入，小心行事', desc: '不能被幻象迷惑', next: 'deep_ruins', effects: { daoxin: 3, concept: { truth: 8, samsara: 3 } } },
+    ]
+  },
+
+  leave_quietly: {
+    title: '谨慎',
+    location: '遗迹外围',
+    chapter: '第四章 · 遗迹',
+    text: `你没有去招惹那个白衣女子，而是悄悄离开了。
+
+事出反常必有妖。
+
+在遗迹这种地方，越是美丽的东西，就越是危险。
+
+你继续在外围探索，虽然收获不多，但胜在安全。
+
+忽然，你听到了一声惨叫。
+
+是从遗迹深处传来的。
+
+"看来……里面出事了。"你心中暗道。
+
+你犹豫了一下，最终还是决定进去看看。
+
+不入虎穴，焉得虎子。
+
+但你会更加小心。`,
+    choices: [
+      { text: '向深处进发，保持警惕', desc: '小心驶得万年船', next: 'deep_ruins', effects: { daoxin: 2, concept: { truth: 5, death: 3 } } },
+    ]
+  },
+
+  share_ruins: {
+    title: '分宝',
+    location: '古神殿',
+    chapter: '第四章 · 遗迹',
+    text: `"慢着！"你开口道，"这些宝物，我可以分你一些。"
+
+华服青年愣了一下。
+
+"你说什么？"
+
+"我说，宝物可以分你一些。"你淡淡道，"这里有三样东西，我们各取所需，没必要拼个你死我活。"
+
+华服青年沉吟了一下。
+
+他看不透你的修为，但你能一路走到这里，说明实力不弱。真打起来，谁输谁赢还不一定。
+
+"好。"他点了点头，"怎么分？"
+
+"你先选。"你很大度。
+
+华服青年眼睛一亮。他毫不犹豫地拿起了那颗丹药。
+
+"我要这个。"
+
+这颗丹药一看就不是凡品，服下去说不定能直接突破一个境界。
+
+"可以。"你点了点头，"那我要这枚玉简和这面小旗。"
+
+华服青年有些意外。
+
+"你确定？这颗丹药可是……"
+
+"我确定。"你笑了笑，"丹药是消耗品，用了就没了。但玉简和小旗，可以一直用。"
+
+华服青年嗤笑一声。
+
+"随你。"他拿着丹药，转身就走，"我们走！"
+
+看着他们离去的背影，你嘴角微微上扬。
+
+"傻子……"
+
+那颗丹药虽然珍贵，但玉简中记载的古神传承，才是真正的无价之宝。`,
+    choices: [
+      { text: '查看玉简内容', desc: '真正的宝物，是这个', next: 'ancient_god_jade', effects: { item: 'guyi_jade', daoxin: 3, concept: { truth: 8, samsara: 5 }, achievement: 'ancient_god' } },
+    ]
+  },
+
+  let_him_go: {
+    title: '放人',
+    location: '古神殿',
+    chapter: '第四章 · 遗迹',
+    text: `"站住。"你停下脚步。
+
+华服青年一愣。
+
+"你……你想干什么？"
+
+"你走吧。"你淡淡道，"我不杀你。"
+
+华服青年难以置信地看着你。
+
+"你……你放我走？"
+
+"怎么，不想走？"
+
+"走走走！我这就走！"华服青年如蒙大赦，连滚带爬地跑了。
+
+你看着他远去的背影，摇了摇头。
+
+上品爆炎符的威力太大了，真逼急了他，大家一起完蛋。
+
+而且……你也不想杀太多人。
+
+手上的血，已经够多了。
+
+你转过身，看向石台上的宝物。
+
+"现在，该看看这些是什么了。"`,
+    choices: [
+      { text: '查看宝物', desc: '看看都有什么好东西', next: 'ancient_god_jade', effects: { item: 'guyi_jade', daoxin: 3, concept: { life: 3, karma: 5 }, achievement: 'ancient_god' } },
+    ]
+  },
+
+  disable_hua: {
+    title: '手下留情',
+    location: '古神殿',
+    chapter: '第四章 · 遗迹',
+    text: `你走到华服青年面前，废掉了他的修为。
+
+"啊——！"他发出一声惨叫，然后瘫软在地，面如死灰。
+
+"你废了我的修为……你废了我的修为……"他喃喃道，眼中满是绝望。
+
+对于一个修士来说，废掉修为，比杀了他还难受。
+
+"我不杀你。"你淡淡道，"但你也别想再修仙了。好好做个普通人吧。"
+
+你转过身，拿起石台上的宝物，准备离开。
+
+"等等……"华服青年叫住了你。
+
+"还有事？"
+
+"你……你为什么不杀我？"他艰难地问道，"你就不怕我以后报复你吗？"
+
+你笑了笑。
+
+"报复？"你摇了摇头，"你觉得，你还有机会吗？"
+
+说完，你转身离去。
+
+华服青年坐在地上，久久不语。
+
+他的眼中，闪过一丝复杂的光芒。`,
+    choices: [
+      { text: '查看宝物，然后离开遗迹', desc: '收获不错', next: 'ancient_god_jade', effects: { item: 'guyi_jade', daoxin: 3, concept: { life: 5, karma: 8 }, achievement: 'ancient_god' } },
+    ]
+  },
+
+  refuse_inherit: {
+    title: '无功不受禄',
+    location: '古神殿',
+    chapter: '第四章 · 遗迹',
+    text: `"前辈的传承太过贵重，弟子怕是承受不起。"你躬身道，"而且，弟子已经有自己的道了。"
+
+虚影愣住了。
+
+"你……你拒绝了？"他似乎不敢相信，"你可知道，古神传承是多少人梦寐以求的东西？"
+
+"弟子知道。"你平静地说，"但弟子认为，道，要靠自己走。别人的传承再好，也是别人的。"
+
+"弟子想要的，是属于自己的道。"
+
+虚影沉默了很久。
+
+然后，他笑了。
+
+"好……好一个属于自己的道！"虚影大笑，"多少年了……多少年没人说过这样的话了……"
+
+"年轻人，你说得对。"虚影看着你，眼中满是赞许，"道，要靠自己走。别人的传承，终究只是外力。"
+
+"老夫果然没有看错人。"
+
+虚影一挥手，一道光芒飞入你的体内。
+
+"这是老夫对大道的一点感悟，送给你。至于功法……你就自己去悟吧。"
+
+"记住，你的道，只能靠你自己。"
+
+虚影渐渐消散了。
+
+你站在原地，感受着体内那股精纯的感悟之力。
+
+你的道心，变得更加坚定了。
+
+"多谢前辈。"你对着骸骨深深一拜。`,
+    choices: [
+      { text: '离开遗迹，继续自己的道', desc: '我的道，我自己走', next: 'road_to_jiedan', effects: { realm: 0.8, daoxin: 8, concept: { samsara: 10, truth: 10, time: 10, karma: 10 } } },
+    ]
+  },
+
+  different_from_evil: {
+    title: '心魔',
+    location: '小镇废墟',
+    chapter: '第六章 · 问心',
+    text: `"不一样！我和你不一样！"你嘶吼道。
+
+"我杀的都是该杀之人！我是为了正义！"
+
+邪修看着你，突然笑了。
+
+"正义？"他笑得很嘲讽，"你说你杀的都是该杀之人？那我问你，谁该死？谁不该死？由谁来定？"
+
+"你吗？"
+
+你愣住了。
+
+"你说你是为了正义，可在那些被你杀死的人眼里，你才是邪恶的。"邪修咳着血，"正义……不过是胜利者的借口罢了。"
+
+"你和我，没有区别。"
+
+"我们都是……双手沾满鲜血的人。"
+
+你后退了几步，脸色苍白。
+
+"不……不是这样的……"
+
+"我和他不一样……"
+
+你的道心，开始动摇。
+
+邪修看着你，眼中闪过一丝诡异的光芒。
+
+"怎么，被我说中了？"他狞笑道，"来吧，投入魔道吧。在魔道中，你不用伪装，不用压抑，你可以随心所欲地做你想做的事……"
+
+他的声音如同魔咒一般，在你耳边回响。
+
+你的意识，开始模糊……`,
+    choices: [
+      { text: '不！我不会入魔！', desc: '我的道心，坚如磐石！', next: 'defeat_demon', effects: { daoxin: 5, concept: { truth: 10, death: 5 } } },
+      { text: '也许……他说得对……', desc: '魔道……好像也不错……', next: 'fall_demon', effects: { daoxin: -10, concept: { slaughter: 15, death: 10 } } },
+    ]
+  },
+
+  execute_evil: {
+    title: '斩',
+    location: '小镇废墟',
+    chapter: '第六章 · 问心',
+    text: `"少废话！"你一掌拍在他的天灵盖上。
+
+噗——
+
+邪修头一歪，死了。
+
+你收回手，面无表情。
+
+杀了就是杀了，哪来那么多废话。
+
+你搜了他的身，找到了不少好东西，然后一把火烧了他的尸体。
+
+至于小镇上的死者……
+
+你没有埋。
+
+关你什么事？
+
+你转身离去，没有回头。
+
+风吹过，带着血腥气。
+
+你的背影，孤傲而冷漠。
+
+从什么时候起，你变成了这个样子？
+
+你不知道。
+
+你只知道，在这个弱肉强食的世界，心软的人活不长。
+
+善良？正义？
+
+那都是弱者的借口。`,
+    choices: [
+      { text: '继续前行', desc: '我的道，我自己走', next: 'final_chapter', effects: { daoxin: -5, concept: { slaughter: 15, death: 10, truth: -5 } } },
+    ]
+  },
+
+  defeat_demon: {
+    title: '道心',
+    location: '小镇废墟',
+    chapter: '第六章 · 问心',
+    text: `"不！"你大喝一声，"我不会入魔！"
+
+"我的道心，坚如磐石！"
+
+你盘膝坐下，开始运转功法，镇压心魔。
+
+邪修的话，如同魔咒一般，在你脑海中不断回响。
+
+"你和我一样……你双手沾满鲜血……你是个恶魔……"
+
+"闭嘴！"你怒吼。
+
+"我不是恶魔！我只是……只是想活下去……"
+
+"我有我想守护的人……我有我想做的事……"
+
+"我的道，是守护之道，不是杀戮之道！"
+
+"杀戮只是手段，不是目的！"
+
+"我不会被你迷惑的！"
+
+你的道心，在一次次的拷问中变得更加坚定。
+
+心魔，被你镇压了。
+
+当你再次睁开眼睛的时候，你的眼神变得无比清澈。
+
+你站起身来，看着邪修的尸体，缓缓道：
+
+"你说得对，我手上确实沾了血。"
+
+"但我和你不一样。"
+
+"因为我知道，我为什么而杀。"
+
+你转过身，大步离去。
+
+你的道心，经过这次磨砺，变得更加坚定了。`,
+    choices: [
+      { text: '继续前行', desc: '道心坚定，一往无前', next: 'final_chapter', effects: { daoxin: 8, concept: { truth: 10, life: 5, death: 5, karma: 5 } } },
+    ]
+  },
+
+  fall_demon: {
+    title: '入魔',
+    location: '小镇废墟',
+    chapter: '第六章 · 问心',
+    text: `"也许……你说得对……"你喃喃道。
+
+你的眼神，开始变得空洞。
+
+"正义……邪恶……"
+
+"不过都是些无聊的东西……"
+
+"力量……只有力量才是真实的……"
+
+邪修看着你，脸上露出了诡异的笑容。
+
+"来吧……投入魔道吧……"
+
+"在魔道中，你会得到真正的自由……"
+
+你的身体，开始散发出黑色的雾气。
+
+你的瞳孔，变成了血红色。
+
+你笑了。
+
+笑得很疯狂。
+
+"哈哈哈……力量……我要更多的力量……"
+
+你抬起手，魔气涌动。
+
+邪修脸上的笑容更盛了。
+
+但他没想到——
+
+你一掌拍在了他的头上。
+
+噗——
+
+"你……你干什么……"邪修难以置信地看着你。
+
+"你的力量……"你舔了舔嘴唇，"我要了。"
+
+你开始吞噬他的修为，他的精血，他的灵魂。
+
+"不——！"邪修发出一声惨叫，然后彻底消失了。
+
+你吸收了他的全部力量，修为暴涨。
+
+但你，已经不再是你了。
+
+"力量……还不够……"你喃喃道，"我要更多的力量……"
+
+你转过身，向着远方飞去。
+
+你的身上，散发着滔天的魔气。
+
+一代魔头，就此诞生。`,
+    choices: [
+      { text: '【结局】入魔沉沦', desc: '魔由心生，心由境转', next: 'ending_demon', effects: { ending: 'demon' } },
+    ]
+  },
+
+  persuade_evil: {
+    title: '劝善',
+    location: '小镇废墟',
+    chapter: '第六章 · 问心',
+    text: `"放下屠刀，立地成佛。"你缓缓道，"苦海无边，回头是岸。"
+
+邪修愣住了，然后哈哈大笑起来。
+
+"放下屠刀？回头是岸？"他笑得眼泪都出来了，"你以为你是谁？佛祖吗？"
+
+"我不是佛祖。"你平静地说，"我只是一个普通的修士。"
+
+"但我知道，一个人如果走错了路，现在回头，还来得及。"
+
+邪修的笑声停了。
+
+他看着你，眼中闪过一丝复杂的光芒。
+
+"来得及吗……"他喃喃道，"我杀了那么多人……双手沾满了鲜血……还来得及吗……"
+
+"来得及。"你认真地说，"只要你真心悔过，什么时候都来得及。"
+
+邪修沉默了很久。
+
+然后，他笑了，笑得很凄凉。
+
+"谢谢你……"他说，"很久没有人跟我说过这样的话了……"
+
+"我叫……血魔子。"他抬起头，看着你，"如果你不介意……可以叫我老血。"
+
+你一愣。
+
+"你……"
+
+"我决定了。"血魔子笑了笑，"我不修炼魔功了。我要找个地方，安安静静地过完下半辈子。"
+
+"在死之前……多做点好事，赎我犯下的罪。"
+
+他从怀里掏出一本功法和一个储物袋，递给你。
+
+"这些……都给你吧。我用不着了。"
+
+你接过东西，看着他。
+
+"你……"
+
+"保重。"血魔子笑了笑，转身离去。
+
+夕阳下，他的背影显得有些落寞，但又有一丝轻松。
+
+你站在原地，久久不语。`,
+    choices: [
+      { text: '埋葬死者，然后离开', desc: '愿他能真正放下', next: 'final_chapter', effects: { daoxin: 8, concept: { karma: 15, life: 10, truth: 5 }, achievement: 'kind_choice' } },
+    ]
+  },
+
+  ignore_evil: {
+    title: '路过',
+    location: '小镇上空',
+    chapter: '第六章 · 问心',
+    text: `你没有停下，继续向前飞去。
+
+事不关己，高高挂起。
+
+那个小镇上的人的死活，跟你有什么关系？
+
+你已经不是当年那个热血少年了。这些年，你见过了太多的生离死别，心早就硬了。
+
+"弱肉强食，这就是修仙界的法则。"你喃喃道，"他们死了，只能怪他们自己太弱。"
+
+你飞得越来越远。
+
+但不知道为什么，你总是静不下心来。
+
+那些人的惨叫声，那些绝望的眼神……一直在你脑海中挥之不去。
+
+"我做错了吗？"你问自己。
+
+没有人回答。
+
+风吹过，带着一丝凉意。
+
+你的道心，似乎又蒙上了一层尘埃。`,
+    choices: [
+      { text: '不去想了，继续赶路', desc: '成大事者，不拘小节', next: 'final_chapter', effects: { daoxin: -8, concept: { death: 8, truth: -3 } } },
+    ]
+  },
+
+  reincarnate: {
+    title: '轮回',
+    isEnding: true,
+    endingId: 'samsara',
+    text: `（新的轮回即将开启……）
+
+你将带着前世的部分记忆和感悟，重新踏上仙途。
+
+每一次轮回，都是一次新的机会。
+
+每一次轮回，你的道心都会更加坚定。
+
+……
+
+"铁柱，铁柱……醒醒……"
+
+你睁开眼睛，发现自己躺在一张熟悉的床上。
+
+一个中年妇人正坐在床边，担忧地看着你。
+
+"娘……"你喃喃道。
+
+"傻孩子，发什么呆呢？"妇人摸了摸你的额头，"快起来吃饭了，你爹还等着呢。"
+
+你坐起身来，看着周围熟悉的一切。
+
+青牛镇，王家，你的房间。
+
+你……回来了？
+
+你摸了摸自己的身体。
+
+年轻，充满活力。
+
+这是你十五岁的时候。
+
+"我……真的回来了……"你喃喃道，眼中涌出泪水。
+
+这一世，你会做出什么样的选择呢？
+
+——轮回开启·新的一世——`,
+    choices: [
+      { text: '开始新的一世', desc: '这一世，我要走出不一样的路', next: 'start_new_cycle', effects: {} },
+    ]
+  },
+
+  start_new_cycle: {
+    title: '重生',
+    location: '青牛镇 · 王家',
+    chapter: '序章 · 重生',
+    text: `你穿好衣服，走出房间。
+
+院子里，父亲正在劈柴，母亲正在做饭。
+
+一切都和记忆中一模一样。
+
+"铁柱，起来了？"父亲抬起头，看了你一眼，"快去洗脸吃饭。"
+
+"嗯。"你点了点头，声音有些哽咽。
+
+多少年了……
+
+你多少年没有见过父母了？
+
+你走到父亲身边，接过他手中的斧头。
+
+"爹，我来劈吧。"
+
+父亲愣了一下，然后笑了。
+
+"好，好，我儿子长大了。"
+
+你劈着柴，眼泪不争气地流了下来。
+
+这一世，你不会再留下遗憾了。
+
+这一世，你要走出一条不一样的路。
+
+……
+
+这日，你正在院子里劈柴，忽然听到镇上传来一阵喧哗。
+
+你停下手中的动作，望向镇口的方向。
+
+青云宗的人，来了。
+
+和记忆中一模一样的时间，一模一样的场景。
+
+你放下斧头，深吸一口气。
+
+"这一世……"你喃喃道，"我会做出什么样的选择呢？"`,
+    choices: [
+      { text: '前往镇口，参加灵根测试', desc: '一切，从这里重新开始', next: 'start', effects: {} },
+    ]
+  },
+};
+
+// ---------- 游戏状态 ----------
+let gameState = {
+  currentNode: 'start',
+  realm: 0, // 0-8 对应 凡人到问鼎，小数为进度
+  daoxin: 50, // 0-100 道心值
+  concepts: {
+    life: 0, death: 0, samsara: 0, karma: 0, time: 0, truth: 0, slaughter: 0
+  },
+  inventory: [],
+  achievements: [],
+  cycle: 1, // 周目数
+  textSpeed: 40, // 打字速度
+  isTyping: false,
+  typeTimer: null,
+  fullText: '',
+  currentTextIndex: 0,
+  endingReached: false,
+  currentEnding: null,
+  inheritedItem: null, // 传承物品
+  inheritedConcepts: null, // 传承意境
+};
+
+// ---------- 全局数据（跨周目保留） ----------
+let globalData = {
+  totalAchievements: [],
+  totalCycles: 1,
+  bestEnding: null,
+  unlockedEndings: [],
+};
+
+// ---------- 工具函数 ----------
+function $(id) { return document.getElementById(id); }
+
+function numToChinese(num) {
+  const map = ['零','一','二','三','四','五','六','七','八','九','十'];
+  if (num <= 10) return map[num];
+  if (num < 20) return '十' + map[num - 10];
+  if (num < 100) {
+    const tens = Math.floor(num / 10);
+    const ones = num % 10;
+    return map[tens] + '十' + (ones > 0 ? map[ones] : '');
+  }
+  return String(num);
+}
+
+function getRealmName() {
+  const idx = Math.floor(gameState.realm);
+  const progress = (gameState.realm - idx) * 100;
+  const name = REALMS[Math.min(idx, REALMS.length - 1)];
+  return { name, progress: Math.floor(progress) };
+}
+
+function updateStatusBar() {
+  const { name, progress } = getRealmName();
+  $('realmName').textContent = name;
+  $('realmProgress').textContent = progress + '%';
+  $('realmBarFill').style.width = progress + '%';
+  $('daoxinValue').textContent = Math.floor(gameState.daoxin);
+  $('achCount').textContent = gameState.achievements.length;
+  $('cycleCount').textContent = numToChinese(gameState.cycle);
+
+  // 更新意境显示
+  const conceptsDisplay = $('conceptsDisplay');
+  conceptsDisplay.innerHTML = '';
+  CONCEPT_KEYS.forEach(key => {
+    const val = Math.floor(gameState.concepts[key]);
+    if (val > 0) {
+      const span = document.createElement('span');
+      span.className = 'flex items-center';
+      span.title = `${CONCEPTS[key].name}: ${val}`;
+      span.innerHTML = `<span class="concept-dot" style="background:${CONCEPTS[key].color}"></span><span class="text-text-dim">${CONCEPTS[key].short}</span><span class="text-gold/70 ml-1 text-[10px]">${val}</span>`;
+      conceptsDisplay.appendChild(span);
+    }
+  });
+  if (conceptsDisplay.children.length === 0) {
+    conceptsDisplay.innerHTML = '<span class="text-text-dim/50">无</span>';
+  }
+
+  // 更新物品栏
+  const invDisplay = $('inventoryDisplay');
+  invDisplay.innerHTML = '';
+  if (gameState.inventory.length === 0) {
+    invDisplay.innerHTML = '<div class="item-slot text-text-dim/40">空</div>';
+  } else {
+    gameState.inventory.forEach(itemId => {
+      const item = ITEMS[itemId];
+      if (!item) return;
+      const div = document.createElement('div');
+      div.className = 'item-slot';
+      div.innerHTML = `<span class="text-gold/80">${item.name.substring(0,2)}</span>
+        <div class="item-tooltip"><div class="text-gold font-bold mb-1">${item.name}</div><div class="text-text-dim">${item.desc}</div></div>`;
+      invDisplay.appendChild(div);
+    });
+  }
+}
+
+function showToast(achievementId) {
+  const ach = ACHIEVEMENTS[achievementId];
+  if (!ach) return;
+
+  const container = $('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `
+    <div class="flex items-start">
+      <span class="toast-icon">🏆</span>
+      <div class="flex-1">
+        <div class="text-gold font-bold text-sm mb-1">成就解锁</div>
+        <div class="text-gold/90 text-xs font-bold">${ach.name}</div>
+        <div class="text-text-dim text-xs mt-1">${ach.desc}</div>
+      </div>
+    </div>
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('leaving');
+    setTimeout(() => toast.remove(), 400);
+  }, 3500);
+}
+
+function unlockAchievement(id) {
+  if (gameState.achievements.includes(id)) return;
+  gameState.achievements.push(id);
+  if (!globalData.totalAchievements.includes(id)) {
+    globalData.totalAchievements.push(id);
+    saveGlobalData();
+  }
+  showToast(id);
+  updateStatusBar();
+}
+
+function addItem(itemId) {
+  if (!ITEMS[itemId]) return;
+  if (gameState.inventory.includes(itemId)) return;
+  if (gameState.inventory.length >= 6) {
+    // 物品栏满了，替换最早的
+    gameState.inventory.shift();
+  }
+  gameState.inventory.push(itemId);
+  updateStatusBar();
+
+  // 检查万宝缠身成就
+  if (gameState.inventory.length >= 5) {
+    unlockAchievement('all_items');
+  }
+}
+
+function removeItem(itemId) {
+  const idx = gameState.inventory.indexOf(itemId);
+  if (idx > -1) {
+    gameState.inventory.splice(idx, 1);
+    updateStatusBar();
+  }
+}
+
+function applyEffects(effects) {
+  if (!effects) return;
+
+  if (effects.realm !== undefined) {
+    gameState.realm = Math.min(7.99, gameState.realm + effects.realm);
+  }
+  if (effects.daoxin !== undefined) {
+    gameState.daoxin = Math.max(0, Math.min(100, gameState.daoxin + effects.daoxin));
+    // 检查道心成就
+    if (gameState.daoxin >= 80) unlockAchievement('dao_heart_strong');
+    if (gameState.daoxin <= 30) unlockAchievement('dao_heart_weak');
+  }
+  if (effects.concept) {
+    for (const [key, val] of Object.entries(effects.concept)) {
+      if (gameState.concepts[key] !== undefined) {
+        gameState.concepts[key] = Math.min(100, gameState.concepts[key] + val);
+      }
+    }
+    // 检查万法皆通成就
+    const allAbove30 = CONCEPT_KEYS.every(k => gameState.concepts[k] >= 30);
+    if (allAbove30) unlockAchievement('all_concepts');
+  }
+  if (effects.item) {
+    addItem(effects.item);
+  }
+  if (effects.item_remove) {
+    removeItem(effects.item_remove);
+  }
+  if (effects.achievement) {
+    unlockAchievement(effects.achievement);
+  }
+  if (effects.ending) {
+    gameState.endingReached = true;
+    gameState.currentEnding = effects.ending;
+    // 记录结局成就
+    const endingAchMap = {
+      ascend: 'ending_ascend',
+      fall: 'ending_fall',
+      demon: 'ending_demon',
+      recluse: 'ending_recluse',
+      heritage: 'ending_heritage',
+      huadao: 'ending_huadao',
+      samsara: 'ending_samsara',
+      lonely: 'ending_lonely',
+    };
+    if (endingAchMap[effects.ending]) {
+      unlockAchievement(endingAchMap[effects.ending]);
+    }
+    // 记录解锁的结局
+    if (!globalData.unlockedEndings.includes(effects.ending)) {
+      globalData.unlockedEndings.push(effects.ending);
+      saveGlobalData();
+    }
+    // 第一次死亡
+    if (effects.ending === 'fall' || effects.ending === 'demon') {
+      unlockAchievement('first_death');
+    }
+  }
+
+  updateStatusBar();
+}
+
+// ---------- 打字机效果 ----------
+function typeText(text, callback) {
+  stopTyping();
+  gameState.isTyping = true;
+  gameState.fullText = text;
+  gameState.currentTextIndex = 0;
+  const el = $('storyText');
+  el.textContent = '';
+  el.classList.add('typing-cursor');
+
+  gameState.typeTimer = setInterval(() => {
+    if (gameState.currentTextIndex >= text.length) {
+      stopTyping();
+      if (callback) callback();
+      return;
+    }
+    el.textContent += text[gameState.currentTextIndex];
+    gameState.currentTextIndex++;
+
+    // 自动滚动
+    const container = $('textContainer');
+    container.scrollTop = container.scrollHeight;
+  }, gameState.textSpeed);
+}
+
+function stopTyping() {
+  if (gameState.typeTimer) {
+    clearInterval(gameState.typeTimer);
+    gameState.typeTimer = null;
+  }
+  if (gameState.isTyping) {
+    gameState.isTyping = false;
+    const el = $('storyText');
+    el.textContent = gameState.fullText;
+    el.classList.remove('typing-cursor');
+  }
+}
+
+function skipTyping() {
+  if (gameState.isTyping) {
+    stopTyping();
+    return true;
+  }
+  return false;
+}
+
+// ---------- 剧情推进 ----------
+function goToNode(nodeId) {
+  const node = STORY[nodeId];
+  if (!node) {
+    console.error('Node not found:', nodeId);
+    return;
+  }
+
+  gameState.currentNode = nodeId;
+
+  // 更新章节/地点
+  if (node.chapter) $('chapterName').textContent = node.chapter;
+  if (node.location) $('sceneLocation').textContent = node.location;
+  if (node.title) $('sceneName').textContent = node.title;
+
+  // 显示文本
+  typeText(node.text, () => {
+    // 打字完成后显示选项
+    showChoices(node);
+  });
+
+  // 隐藏选项
+  $('choicesContainer').innerHTML = '';
+
+  // 检查是否结局
+  if (node.isEnding) {
+    // 结局节点特殊处理在showChoices之后
+  }
+
+  // 自动保存
+  autoSave();
+}
+
+function showChoices(node) {
+  const container = $('choicesContainer');
+  container.innerHTML = '';
+
+  if (!node.choices || node.choices.length === 0) return;
+
+  node.choices.forEach((choice, index) => {
+    const card = document.createElement('div');
+    card.className = 'choice-card animate-slide-up';
+    card.style.animationDelay = (index * 0.1) + 's';
+    card.style.opacity = '0';
+    card.innerHTML = `
+      <div class="choice-title">${choice.text}</div>
+      ${choice.desc ? `<div class="choice-desc">${choice.desc}</div>` : ''}
+    `;
+    card.addEventListener('click', () => {
+      if (gameState.isTyping) return;
+      handleChoice(choice);
+    });
+    container.appendChild(card);
+  });
+}
+
+function handleChoice(choice) {
+  // 应用效果
+  if (choice.effects) {
+    applyEffects(choice.effects);
+  }
+
+  // 轮回特殊处理
+  if (choice.effects && choice.effects.cycle) {
+    startNewCycle();
+    return;
+  }
+
+  // 前往下一个节点
+  if (choice.next === 'title') {
+    showTitleScreen();
+    return;
+  }
+
+  if (choice.next) {
+    goToNode(choice.next);
+  }
+}
+
+// ---------- 结局处理 ----------
+function showEnding(endingId) {
+  const endings = {
+    ascend: { title: '飞升成仙', text: STORY.ending_ascend.text },
+    fall: { title: '陨落道消', text: STORY.ending_fall.text },
+    demon: { title: '入魔沉沦', text: STORY.ending_demon.text },
+    recluse: { title: '归隐山林', text: STORY.ending_recluse.text },
+    heritage: { title: '传承道统', text: STORY.ending_heritage.text },
+    huadao: { title: '化道天地', text: STORY.ending_huadao.text },
+    samsara: { title: '轮回重生', text: STORY.ending_samsara.text },
+    lonely: { title: '无敌寂寞', text: STORY.ending_lonely.text },
+  };
+
+  const ending = endings[endingId] || endings.fall;
+
+  $('gameScreen').classList.add('hidden');
+  $('statusBar').classList.add('hidden');
+  $('endingScreen').classList.remove('hidden');
+
+  $('endingTitle').textContent = ending.title;
+  $('endingText').textContent = ending.text;
+
+  const { name } = getRealmName();
+  $('endRealm').textContent = name;
+  $('endDaoxin').textContent = Math.floor(gameState.daoxin);
+  $('endAchievements').textContent = gameState.achievements.length;
+}
+
+// ---------- 轮回系统 ----------
+function startNewCycle() {
+  gameState.cycle++;
+  globalData.totalCycles = Math.max(globalData.totalCycles, gameState.cycle);
+
+  // 三生三世成就
+  if (gameState.cycle >= 3) unlockAchievement('reincarnate_3');
+
+  // 传承物品（保留一件最强的）
+  let bestItem = null;
+  let bestValue = 0;
+  const itemValue = {
+    tianni_zhu: 100, guyi_jade: 90, pozu_jian: 80, guyi_sword: 60,
+    danlu_pill: 40, yuhuo_talisman: 30, qingxin_cao: 20, xueyu_pearl: 50,
+    huiyin_stone: 70, wuji_pill: 85, dao_heart: 95, mortal_bowl: 10
+  };
+  gameState.inventory.forEach(id => {
+    if ((itemValue[id] || 0) > bestValue) {
+      bestValue = itemValue[id] || 0;
+      bestItem = id;
+    }
+  });
+
+  // 传承意境（保留30%）
+  const inheritedConcepts = {};
+  CONCEPT_KEYS.forEach(key => {
+    inheritedConcepts[key] = Math.floor(gameState.concepts[key] * 0.3);
+  });
+
+  // 保存全局数据
+  saveGlobalData();
+
+  // 重置游戏状态
+  gameState.realm = 0;
+  gameState.daoxin = 50;
+  gameState.concepts = { life: 0, death: 0, samsara: 0, karma: 0, time: 0, truth: 0, slaughter: 0 };
+  gameState.inventory = [];
+  gameState.endingReached = false;
+  gameState.currentEnding = null;
+  gameState.currentNode = 'start_new_cycle';
+
+  // 应用传承
+  if (bestItem) {
+    addItem(bestItem);
+    gameState.inheritedItem = bestItem;
+  }
+  for (const [key, val] of Object.entries(inheritedConcepts)) {
+    if (val > 0) {
+      gameState.concepts[key] = val;
+    }
+  }
+  gameState.inheritedConcepts = inheritedConcepts;
+
+  // 显示游戏界面
+  $('endingScreen').classList.add('hidden');
+  $('titleScreen').classList.add('hidden');
+  $('gameScreen').classList.remove('hidden');
+  $('statusBar').classList.remove('hidden');
+
+  updateStatusBar();
+  goToNode('start_new_cycle');
+}
+
+// ---------- 存档系统 ----------
+function saveGame(slot = 'auto') {
+  try {
+    const saveData = {
+      currentNode: gameState.currentNode,
+      realm: gameState.realm,
+      daoxin: gameState.daoxin,
+      concepts: gameState.concepts,
+      inventory: gameState.inventory,
+      achievements: gameState.achievements,
+      cycle: gameState.cycle,
+      endingReached: gameState.endingReached,
+      currentEnding: gameState.currentEnding,
+      inheritedItem: gameState.inheritedItem,
+      inheritedConcepts: gameState.inheritedConcepts,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem('xianni_save_' + slot, JSON.stringify(saveData));
+    return true;
+  } catch (e) {
+    console.error('Save failed:', e);
+    return false;
+  }
+}
+
+function loadGame(slot = 'auto') {
+  try {
+    const data = localStorage.getItem('xianni_save_' + slot);
+    if (!data) return false;
+    const saveData = JSON.parse(data);
+
+    gameState.currentNode = saveData.currentNode;
+    gameState.realm = saveData.realm;
+    gameState.daoxin = saveData.daoxin;
+    gameState.concepts = saveData.concepts || gameState.concepts;
+    gameState.inventory = saveData.inventory || [];
+    gameState.achievements = saveData.achievements || [];
+    gameState.cycle = saveData.cycle || 1;
+    gameState.endingReached = saveData.endingReached || false;
+    gameState.currentEnding = saveData.currentEnding || null;
+    gameState.inheritedItem = saveData.inheritedItem || null;
+    gameState.inheritedConcepts = saveData.inheritedConcepts || null;
+
+    return true;
+  } catch (e) {
+    console.error('Load failed:', e);
+    return false;
+  }
+}
+
+function autoSave() {
+  saveGame('auto');
+}
+
+function saveGlobalData() {
+  try {
+    localStorage.setItem('xianni_global', JSON.stringify(globalData));
+  } catch (e) {
+    console.error('Global save failed:', e);
+  }
+}
+
+function loadGlobalData() {
+  try {
+    const data = localStorage.getItem('xianni_global');
+    if (data) {
+      globalData = Object.assign(globalData, JSON.parse(data));
+    }
+  } catch (e) {
+    console.error('Global load failed:', e);
+  }
+}
+
+function hasSaveData() {
+  return !!localStorage.getItem('xianni_save_auto');
+}
+
+// ---------- 界面切换 ----------
+function showTitleScreen() {
+  stopTyping();
+  $('titleScreen').classList.remove('hidden');
+  $('gameScreen').classList.add('hidden');
+  $('endingScreen').classList.add('hidden');
+  $('statusBar').classList.add('hidden');
+  $('menuModal').classList.add('hidden');
+
+  // 更新周目显示
+  $('cycleNum').textContent = numToChinese(globalData.totalCycles);
+  if (globalData.totalCycles > 1) {
+    $('cycleInfo').style.opacity = '1';
+  }
+
+  // 继续游戏按钮
+  $('btnContinue').style.display = hasSaveData() ? 'block' : 'none';
+}
+
+function startNewGame() {
+  gameState = {
+    currentNode: 'start',
+    realm: 0,
+    daoxin: 50,
+    concepts: { life: 0, death: 0, samsara: 0, karma: 0, time: 0, truth: 0, slaughter: 0 },
+    inventory: [],
+    achievements: [],
+    cycle: globalData.totalCycles || 1,
+    textSpeed: 40,
+    isTyping: false,
+    typeTimer: null,
+    fullText: '',
+    currentTextIndex: 0,
+    endingReached: false,
+    currentEnding: null,
+    inheritedItem: null,
+    inheritedConcepts: null,
+  };
+
+  $('titleScreen').classList.add('hidden');
+  $('gameScreen').classList.remove('hidden');
+  $('statusBar').classList.remove('hidden');
+  $('endingScreen').classList.add('hidden');
+
+  updateStatusBar();
+  goToNode('start');
+}
+
+function continueGame() {
+  if (!loadGame('auto')) {
+    startNewGame();
+    return;
+  }
+
+  $('titleScreen').classList.add('hidden');
+  $('gameScreen').classList.remove('hidden');
+  $('statusBar').classList.remove('hidden');
+  $('endingScreen').classList.add('hidden');
+
+  updateStatusBar();
+
+  const node = STORY[gameState.currentNode];
+  if (node) {
+    if (node.chapter) $('chapterName').textContent = node.chapter;
+    if (node.location) $('sceneLocation').textContent = node.location;
+    if (node.title) $('sceneName').textContent = node.title;
+    typeText(node.text, () => showChoices(node));
+  }
+}
+
+// ---------- 成就列表 ----------
+function showAchievements() {
+  const list = $('achievementList');
+  list.innerHTML = '';
+
+  const allIds = Object.keys(ACHIEVEMENTS);
+  allIds.forEach(id => {
+    const ach = ACHIEVEMENTS[id];
+    const unlocked = globalData.totalAchievements.includes(id);
+    const div = document.createElement('div');
+    div.className = `p-3 border ${unlocked ? 'border-gold/40 bg-gold/5' : 'border-gold/10 bg-ink-3/30'}`;
+    div.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">${unlocked ? '🏆' : '🔒'}</span>
+          <span class="${unlocked ? 'text-gold' : 'text-text-dim/50'} font-bold">${unlocked ? ach.name : '???'}</span>
+        </div>
+      </div>
+      <div class="text-xs ${unlocked ? 'text-text-dim' : 'text-text-dim/30'} mt-1 ml-7">
+        ${unlocked ? ach.desc : ach.hint || '未解锁'}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  $('achievementModal').classList.remove('hidden');
+}
+
+// ---------- 粒子背景 ----------
+function createParticles() {
+  const container = $('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (15 + Math.random() * 20) + 's';
+    p.style.animationDelay = (Math.random() * 20) + 's';
+    p.style.opacity = 0.3 + Math.random() * 0.5;
+    container.appendChild(p);
+  }
+}
+
+// ---------- 事件绑定 ----------
+function bindEvents() {
+  // 标题界面
+  $('btnNewGame').addEventListener('click', startNewGame);
+  $('btnContinue').addEventListener('click', continueGame);
+
+  // 顶部按钮
+  $('btnSave').addEventListener('click', () => {
+    if (saveGame('manual')) {
+      showToastMsg('存档成功');
+    }
+  });
+  $('btnLoad').addEventListener('click', () => {
+    if (loadGame('manual')) {
+      const node = STORY[gameState.currentNode];
+      if (node) {
+        if (node.chapter) $('chapterName').textContent = node.chapter;
+        if (node.location) $('sceneLocation').textContent = node.location;
+        if (node.title) $('sceneName').textContent = node.title;
+        typeText(node.text, () => showChoices(node));
+      }
+      updateStatusBar();
+      showToastMsg('读档成功');
+    } else {
+      showToastMsg('没有找到存档');
+    }
+  });
+  $('btnMenu').addEventListener('click', () => {
+    $('menuModal').classList.remove('hidden');
+  });
+
+  // 菜单
+  $('menuResume').addEventListener('click', () => {
+    $('menuModal').classList.add('hidden');
+  });
+  $('menuSave').addEventListener('click', () => {
+    saveGame('manual');
+    showToastMsg('存档成功');
+    $('menuModal').classList.add('hidden');
+  });
+  $('menuLoad').addEventListener('click', () => {
+    if (loadGame('manual')) {
+      const node = STORY[gameState.currentNode];
+      if (node) {
+        if (node.chapter) $('chapterName').textContent = node.chapter;
+        if (node.location) $('sceneLocation').textContent = node.location;
+        if (node.title) $('sceneName').textContent = node.title;
+        typeText(node.text, () => showChoices(node));
+      }
+      updateStatusBar();
+      showToastMsg('读档成功');
+    } else {
+      showToastMsg('没有找到存档');
+    }
+    $('menuModal').classList.add('hidden');
+  });
+  $('menuAchievements').addEventListener('click', () => {
+    $('menuModal').classList.add('hidden');
+    showAchievements();
+  });
+  $('menuRestart').addEventListener('click', () => {
+    if (confirm('确定要重新开始吗？当前进度将丢失。')) {
+      $('menuModal').classList.add('hidden');
+      startNewGame();
+    }
+  });
+  $('menuTitle').addEventListener('click', () => {
+    $('menuModal').classList.add('hidden');
+    showTitleScreen();
+  });
+
+  // 成就弹窗
+  $('achClose').addEventListener('click', () => {
+    $('achievementModal').classList.add('hidden');
+  });
+  $('achievementModal').addEventListener('click', (e) => {
+    if (e.target.id === 'achievementModal') {
+      $('achievementModal').classList.add('hidden');
+    }
+  });
+
+  // 结局界面
+  $('btnReincarnate').addEventListener('click', () => {
+    startNewCycle();
+  });
+  $('btnBackTitle').addEventListener('click', () => {
+    showTitleScreen();
+  });
+
+  // 文本区域点击快进
+  $('textContainer').addEventListener('click', () => {
+    skipTyping();
+    // 如果已经打完了且选项没显示，显示选项
+    if (!gameState.isTyping && $('choicesContainer').children.length === 0) {
+      const node = STORY[gameState.currentNode];
+      if (node) showChoices(node);
+    }
+  });
+
+  // 键盘快捷键
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (!$('menuModal').classList.contains('hidden')) {
+        $('menuModal').classList.add('hidden');
+      } else if (!$('achievementModal').classList.contains('hidden')) {
+        $('achievementModal').classList.add('hidden');
+      } else if (!$('gameScreen').classList.contains('hidden')) {
+        $('menuModal').classList.remove('hidden');
+      }
+    }
+    if (e.key === ' ' || e.key === 'Enter') {
+      if (gameState.isTyping) {
+        skipTyping();
+        e.preventDefault();
+      }
+    }
+  });
+}
+
+// 简易toast（用于存档提示等）
+function showToastMsg(msg) {
+  const container = $('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `
+    <div class="flex items-center">
+      <span class="toast-icon">📜</span>
+      <div class="text-gold text-sm">${msg}</div>
+    </div>
+  `;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('leaving');
+    setTimeout(() => toast.remove(), 400);
+  }, 2000);
+}
+
+// ---------- 结局检测 ----------
+function checkEnding() {
+  const node = STORY[gameState.currentNode];
+  if (node && node.isEnding) {
+    setTimeout(() => {
+      showEnding(node.endingId);
+    }, 500);
+  }
+}
+
+// 重写goToNode以支持结局检测
+const originalGoToNode = goToNode;
+goToNode = function(nodeId) {
+  originalGoToNode(nodeId);
+  // 延迟检查结局（等文本打完）
+  const node = STORY[nodeId];
+  if (node && node.isEnding) {
+    // 结局节点，打完字后显示结局界面
+    const checkInterval = setInterval(() => {
+      if (!gameState.isTyping) {
+        clearInterval(checkInterval);
+        setTimeout(() => showEnding(node.endingId), 1000);
+      }
+    }, 100);
+  }
+};
+
+// ---------- 初始化 ----------
+function init() {
+  loadGlobalData();
+  createParticles();
+  bindEvents();
+  showTitleScreen();
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', init);
+
+// 页面关闭前自动保存
+window.addEventListener('beforeunload', () => {
+  if (gameState.currentNode && !gameState.endingReached) {
+    saveGame('auto');
+  }
+});
+
+</script>
+</body>
+</html>
